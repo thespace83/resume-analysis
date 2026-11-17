@@ -1,121 +1,45 @@
+import requests
 import os
-import re
-import pymorphy2
 from pypdf import PdfReader
-from natasha import (
-    Segmenter, MorphVocab, NewsEmbedding,
-    NewsMorphTagger, NewsNERTagger, Doc,
-)
-
-segmenter = Segmenter()
-morph_vocab = MorphVocab()
-emb = NewsEmbedding()
-morph_tagger = NewsMorphTagger(emb)
-ner_tagger = NewsNERTagger(emb)
-pymorph = pymorphy2.MorphAnalyzer()
-
-FIO_GRAMMEMES = {"Name", "Surn", "Patr"}
-
-# «ФИО: Иванов Иван Иванович» — самый надёжный якорь в резюме
-FIO_LABEL_RE = re.compile(
-    r"(?:ФИО|Ф\.\s*И\.\s*О\.)\s*[:\-]\s*"
-    r"([А-ЯЁ][а-яё\-]+(?:\s+[А-ЯЁ][а-яё\-]+){0,3})",
-    re.IGNORECASE,
-)
 
 
 def extract_text_pypdf(pdf_path: str) -> str:
     reader = PdfReader(pdf_path)
-    return "\n".join(p.extract_text() or "" for p in reader.pages)
-
-
-def looks_like_fio_word(word: str) -> bool:
-    """Слово похоже на фамилию/имя/отчество?"""
-    word = word.strip(".,;:!?()[]«»\"'")
-    if len(word) < 2 or not word[0].isupper():
-        return False
-    parses = pymorph.parse(word)
-    if not parses:
-        return False
-    return bool(parses[0].tag.grammemes & FIO_GRAMMEMES)
-
-
-def clean_fio_string(text: str) -> str | None:
-    """Оставляем только FIO-слова. Нужно 2 или 3 подряд."""
-    words = [w for w in text.split() if looks_like_fio_word(w)]
-    if 2 <= len(words) <= 3:
-        return " ".join(words)
-    return None
-
-
-def extract_by_label(text: str) -> str | None:
-    m = FIO_LABEL_RE.search(text)
-    return clean_fio_string(m.group(1)) if m else None
-
-
-def extract_names_natasha(text: str) -> list[str]:
-    doc = Doc(text)
-    doc.segment(segmenter)
-    doc.tag_morph(morph_tagger)
-    doc.tag_ner(ner_tagger)
-
-    results, seen = [], set()
-    for span in doc.spans:
-        if span.type != "PER":
-            continue
-        # span.text — исходный вид (не гоняем через normalize,
-        # иначе Грибанова → Грибанов и т.п.)
-        cleaned = clean_fio_string(span.text)
-        if cleaned and cleaned not in seen:
-            seen.add(cleaned)
-            results.append(cleaned)
-    return results
-
-
-def extract_first_fio_from_header(text: str, n_lines: int = 15) -> list[str]:
-    """ФИО обычно в первых строках резюме."""
-    names = []
-    for line in text.splitlines()[:n_lines]:
-        cleaned = clean_fio_string(line.strip())
-        if cleaned:
-            names.append(cleaned)
-    return names
-
-
-HEAD_LINES = 25  # сколько строк сверху считаем «шапкой»
-HEAD_CHARS = 1500  # доп. страховка по символам (что наступит раньше)
-
-
-def get_header(text: str,
-               max_lines: int = HEAD_LINES,
-               max_chars: int = HEAD_CHARS) -> str:
-    lines = text.splitlines()[:max_lines]
-    return "\n".join(lines)[:max_chars]
-
-
-def get_full_name(pdf_path: str) -> str | None:
-    text = extract_text_pypdf(pdf_path)
-    header = get_header(text)  # <-- ВСЁ ниже отрезано
-
-    # 1) явная метка «ФИО:» — самый надёжный сигнал
-    if name := extract_by_label(header):
-        return name
-
-    # 2) NER + морфофильтр, но только по шапке
-    names = extract_names_natasha(header)
-    if names:
-        return names[0]
-
-    # 3) построчный скан шапки
-    for line in header.splitlines():
-        if cleaned := clean_fio_string(line.strip()):
-            return cleaned
-
-    return None
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text() or ""
+        text += "\n"
+    return text
 
 
 if __name__ == "__main__":
-    path = "docs"
-    files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-    for file in files:
-        print(f'{file}: {get_full_name("docs/" + file)}')
+    files = [f for f in os.listdir("docs") if os.path.isfile(os.path.join("docs", f))]
+    text = extract_text_pypdf(f"docs\\{files[4]}")
+
+    URL = "https://zerocoder.com/api/v1/messages"
+    H = {"x-api-key": "zc-sk-6d5bff8a7b36c1c9181310e0403efa05be73a4fd6b5cd741", "content-type": "application/json"}
+    r = requests.post(URL, headers=H, json={
+        "model": "claude-sonnet-5.5", "max_tokens": 8192,
+        "messages": [
+            {"role": "user", "content": f"{text}"},
+            {"role": "user",
+             "content": 'Выведи машинно-читаемые данные без форматирования о кандидате в формате JSON. ' +
+                        'Ключ "name", тип значения строка, значение: ФИО кандидата, если не найдено, пустая строка. ' +
+                        'Ключ "age", тип значения число, значение: возраст кандидата, если не найдено, -1. ' +
+                        'Ключ "gender", тип значения строка, значение: пол кандидата (один из вариантов: "мужчина", "женщина"), если не найдено, пустая строка. ' +
+                        'Ключ "education", тип значения список строк, значение: список из образований кандидата, (образование это один из вариантов: "среднее", "средне специальное", "неоконченное высшее", "высшее", "бакалавриат", "магистратура", "кандидат наук", "доктор наук", "прочее"), если не найдено, пустой список. ' +
+                        'Ключ "region", тип значения список строк, значение: регион РФ в котором кандидат ищет работу (регион это один из вариантов: "Республика Адыгея", "Республика Алтай", "Алтайский край", "Амурская область", "Архангельская область", "Астраханская область", "Республика Башкортостан", "Белгородская область", "Брянская область", "Республика Бурятия", "Владимирская область", "Волгоградская область", "Вологодская область", "Воронежская область", "Республика Дагестан", "Донецкая Народная Республика", "Еврейская автономная область", "Забайкальский край", "Запорожская область", "Ивановская область", "Иркутская область", "Республика Ингушетия", "Кабардино-Балкарская Республика", "Калининградская область", "Республика Калмыкия", "Калужская область", "Камчатский край", "Карачаево-Черкесская Республика", "Республика Карелия", "Кемеровская область — Кузбасс", "Кировская область", "Республика Коми", "Костромская область", "Краснодарский край", "Красноярский край", "Республика Крым", "Курганская область", "Курская область", "Ленинградская область", "Липецкая область", "Луганская Народная Республика", "Магаданская область", "Республика Марий Эл", "Республика Мордовия", "Москва", "Московская область", "Мурманская область", "Ненецкий автономный округ", "Нижегородская область", "Новгородская область", "Новосибирская область", "Омская область", "Оренбургская область", "Орловская область", "Пензенская область", "Пермский край", "Приморский край", "Псковская область", "Ростовская область", "Рязанская область", "Самарская область", "Санкт-Петербург", "Саратовская область", "Республика Саха (Якутия)", "Сахалинская область", "Свердловская область", "Севастополь", "Республика Северная Осетия — Алания", "Смоленская область", "Ставропольский край", "Тамбовская область", "Республика Татарстан", "Тверская область", "Томская область", "Тульская область", "Республика Тыва", "Тюменская область", "Удмуртская Республика", "Ульяновская область", "Хабаровский край", "Республика Хакасия", "Ханты-Мансийский автономный округ — Югра", "Херсонская область", "Челябинская область", "Чеченская Республика", "Чувашская Республика", "Чукотский автономный округ", "Ямало-Ненецкий автономный округ", "Ярославская область"), если не найдено пустой список. ' +
+                        'Ключ "profession", тип значения строка, значение: профессия кандидата, если не найдено, пустая строка.' +
+                        'Ключ "experience", тип значения число, значение: количество лет работы кандидата, если не найдено, -1. ' +
+                        'Ключ "type-of-employment", тип значения строка, значение: тип работы кандидата, один из вариантов: "постоянная работа", "подработка", "стажировка", "прочее", если не найдено, пустая строка. ' +
+                        'Ключ "info", тип значения строка, значение: личная информация кандидата, если не найдено, пустая строка. ' +
+                        'Ключ "knowledge-of-languages", тип значения список словарей, значение: список из словарей, где ключ название языка, а значение уровень (один из вариантов от "A1" до "C2" или "родной"), если не найдено, пустой список. ' +
+                        'Ключ "driving-license-category", тип значения строка, значение: категория прав кандидата (один из вариантов "А", "В", "С", "D", "E", "BE", "CE", "DE", "TM", "TB"), если не найдено, пустая строка. '
+                        'Ключ "citizenship", тип значения строка, значение: название страны нижним регистром гражданином которой является кандидат, если не найдено, пустая строка.'
+             },
+        ],
+    })
+
+    print(r.json())
+    print('- - - - -')
+    print(r.json()["content"][0]["text"])
