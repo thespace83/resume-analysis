@@ -26,7 +26,7 @@ class Resume:
         self.age: Optional[int] = None
         self.gender: Optional[str] = None
         self.education: Optional[list[str]] = None
-        self.region: Optional[list[str]] = None
+        self.region: Optional[str] = None
         self.profession: Optional[str] = None
         self.experience: Optional[int] = None
         self.type_of_employment: Optional[str] = None
