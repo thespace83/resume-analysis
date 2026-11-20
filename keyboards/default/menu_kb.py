@@ -19,3 +19,12 @@ def get_cancel_keyboard() -> ReplyKeyboardMarkup:
         KeyboardButton(text="Отмена")
     )
     return builder.as_markup(resize_keyboard=True)
+
+
+def get_cancel_and_update_keyboard() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="Отмена"),
+        KeyboardButton(text="Обновить"),
+    )
+    return builder.as_markup(resize_keyboard=True)
