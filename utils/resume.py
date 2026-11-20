@@ -1,13 +1,19 @@
-import logging
 import os
 from typing import Optional
 
+from aiogram import Bot
+from aiogram.types import Downloadable
 from pypdf import PdfReader
 
 from utils.ai import generate_resume
 
 
-def extract_text(pdf_path: str) -> str:
+def extract_text_pdf(pdf_path: str) -> str:
+    """Extract text from PDF file
+
+    parameters:
+    pdf_path: Path to PDF file
+    """
     reader = PdfReader(pdf_path)
     text = ""
     for page in reader.pages:
@@ -16,16 +22,20 @@ def extract_text(pdf_path: str) -> str:
     return text
 
 
-def publish_document(file_id: str):
+async def publish_document(bot: Bot, document: Downloadable):
     """
     Publish resume document
 
     parameters:
     document: Resume document file_id
     """
-    context: str = extract_text(os.path.join("documents", f"{file_id}.pdf"))
-    resume: Resume = create_resume(generate_resume(context))
-    logging.info(resume)
+    await bot.download(document, destination=os.path.join(os.getcwd(), "documents", f"{document.file_id}.pdf"))
+    context: str = extract_text_pdf(
+        os.path.join("documents", f"{document.file_id}.pdf")
+    )
+    resume: Resume = create_resume(
+        generate_resume(context)
+    )
 
 
 def create_resume(data: dict) -> Resume:
