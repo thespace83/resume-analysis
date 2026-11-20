@@ -108,7 +108,7 @@ candidate_format = {
 }
 
 
-def generate_resume(context: str) -> dict:
+def generate_resume_data(context: str) -> dict:
     response = ollama.chat(
         model='qwen3.5:4b',
         messages=[

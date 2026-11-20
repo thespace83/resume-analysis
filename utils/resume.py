@@ -1,11 +1,13 @@
+import asyncio
 import os
 from typing import Optional
 
+import aiomysql
 from aiogram import Bot
 from aiogram.types import Downloadable
 from pypdf import PdfReader
 
-from utils.ai import generate_resume
+from utils.ai import generate_resume_data
 
 
 def extract_text_pdf(pdf_path: str) -> str:
@@ -22,7 +24,7 @@ def extract_text_pdf(pdf_path: str) -> str:
     return text
 
 
-async def publish_document(bot: Bot, document: Downloadable):
+async def publish_document(bot: Bot, conn: aiomysql.Connection, document: Downloadable):
     """
     Publish resume document
 
@@ -30,12 +32,14 @@ async def publish_document(bot: Bot, document: Downloadable):
     document: Resume document file_id
     """
     await bot.download(document, destination=os.path.join(os.getcwd(), "documents", f"{document.file_id}.pdf"))
-    context: str = extract_text_pdf(
-        os.path.join("documents", f"{document.file_id}.pdf")
-    )
-    resume: Resume = create_resume(
-        generate_resume(context)
-    )
+
+    def _process():
+        path = os.path.join("documents", f"{document.file_id}.pdf")
+        context: str = extract_text_pdf(path)
+        data = generate_resume_data(context)
+        return create_resume(data)
+
+    resume = await asyncio.to_thread(_process)
 
 
 def create_resume(data: dict) -> Resume:
