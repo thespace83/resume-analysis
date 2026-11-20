@@ -31,3 +31,7 @@ async def cancel_handler(message: Message, state: FSMContext, repo: ResumesRepos
 @router.message(FindResumeState.watching, F.text)
 async def file_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
     await examine_file(message, state, repo)
+
+@router.message(FindResumeState.watching_target, F.text == "Назад")
+async def file_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+    await activate_find_document(message, state, repo)

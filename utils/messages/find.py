@@ -67,6 +67,9 @@ async def examine_file(message: Message, state: FSMContext, repo: ResumesReposit
         document_url: str = resume.document_url
         document = FSInputFile(os.path.join(os.getcwd(), "documents", document_url),
                                filename="Резюме.pdf")
+
+        await state.set_state(FindResumeState.watching_target)
+        await state.update_data(target=number)
         await message.answer_document(
             caption=await get_info(number, repo),
             document=document,
