@@ -59,7 +59,7 @@ class ResumesRepository:
                     )
                 return resumes
 
-    async def get_resume(self, number: int) -> Resume:
+    async def get_resume(self, number: int) -> Resume | None:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
                 await cur.execute(
@@ -69,6 +69,9 @@ class ResumesRepository:
                     (number,),
                 )
                 rows = await cur.fetchall()
+                if len(rows) == 0:
+                    return None
+
                 row = rows[0]
                 return Resume(
                     document_url=row[1],

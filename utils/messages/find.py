@@ -20,8 +20,11 @@ async def create_message(repo: ResumesRepository) -> str:
     return msg
 
 
-async def create_info(number: int, repo: ResumesRepository) -> str:
-    resume: Resume = await repo.get_resume(number)
+async def get_info(number: int, repo: ResumesRepository) -> str | None:
+    resume: Resume | None = await repo.get_resume(number)
+    if resume is None:
+        return None
+
     msg = f"Имя: {resume.name or ''}\n"
     msg += f"Возраст: {resume.age if resume.age is not None else ''}\n"
     msg += f"Гендер: {resume.gender or ''}\n"
@@ -56,12 +59,16 @@ async def examine_file(message: Message, state: FSMContext, repo: ResumesReposit
 
     if message.text[0] == "#" and message.text[1:].isdigit():
         number = int(message.text[1:])
-        resume = await repo.get_resume(number)
+        resume: Resume | None = await repo.get_resume(number)
+        if resume is None:
+            await activate_find_document(message, state, repo)
+            return
+
         document_url: str = resume.document_url
         document = FSInputFile(os.path.join(os.getcwd(), "documents", document_url),
                                filename="Резюме.pdf")
         await message.answer_document(
-            caption=await create_info(number, repo),
+            caption=await get_info(number, repo),
             document=document,
             reply_markup=get_file_watching_keyboard()
         )
