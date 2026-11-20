@@ -13,7 +13,7 @@ router = Router(name="users:echo")
 
 
 @router.message(LoadResumeState.waiting_for_document, F.text)
-async def load_echo_handler(message: Message, state: FSMContext) -> None:
+async def load_echo_handler(message: Message) -> None:
     await message.answer("Загрузите документ или используйте \"Отмена\"")
 
 
