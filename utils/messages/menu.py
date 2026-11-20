@@ -2,6 +2,7 @@ import aiomysql
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from repositories.resumes_repo import ResumesRepository
 from states import MenuState
 from keyboards.default import get_menu_keyboard
 
@@ -9,7 +10,7 @@ from keyboards.default import get_menu_keyboard
 async def activate_main_menu(
         message: Message,
         state: FSMContext,
-        conn: aiomysql.Connection,
+        repo: ResumesRepository,
 ) -> None:
     await state.set_state(MenuState.menu)
     await message.answer(
@@ -19,7 +20,4 @@ async def activate_main_menu(
         reply_markup=get_menu_keyboard(),
     )
 
-    async with conn.cursor() as cur:
-        await cur.execute("SELECT COUNT(*) FROM resumes")
-        count = (await cur.fetchone())[0]
-    await message.answer(f"Всего пользователей: {count}")
+    await message.answer(f"Всего пользователей: X")

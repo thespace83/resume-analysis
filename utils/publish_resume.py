@@ -8,6 +8,7 @@ from aiogram.types import Downloadable
 from pypdf import PdfReader
 
 from models.resume import Resume
+from repositories.resumes_repo import ResumesRepository
 from utils.ai import generate_resume_data
 
 
@@ -25,7 +26,7 @@ def extract_text_pdf(pdf_path: str) -> str:
     return text
 
 
-async def publish_document(bot: Bot, conn: aiomysql.Connection, document: Downloadable):
+async def publish_document(bot: Bot, repo: ResumesRepository, document: Downloadable):
     """
     Publish resume document
 
@@ -57,4 +58,4 @@ async def publish_document(bot: Bot, conn: aiomysql.Connection, document: Downlo
         )
 
     resume = await asyncio.to_thread(_process)
-
+    await repo.create(resume)

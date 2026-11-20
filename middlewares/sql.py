@@ -5,6 +5,7 @@ from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
 from data.config import settings
+from repositories.resumes_repo import ResumesRepository
 
 
 async def get_pool() -> aiomysql.Pool:
@@ -23,6 +24,7 @@ async def get_pool() -> aiomysql.Pool:
 class DbSessionMiddleware(BaseMiddleware):
     def __init__(self, pool: aiomysql.Pool):
         self.pool = pool
+        self.repo = ResumesRepository(pool)
 
     async def __call__(
             self,
@@ -31,6 +33,6 @@ class DbSessionMiddleware(BaseMiddleware):
             data: Dict[str, Any]
     ) -> Any:
         async with self.pool.acquire() as conn:
-            # Кладём соединение в data под именем 'conn'
+            data["repo"] = ResumesRepository(self.pool)
             data["conn"] = conn
             return await handler(event, data)

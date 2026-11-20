@@ -6,9 +6,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from keyboards.default import get_menu_keyboard, get_cancel_keyboard
+from repositories.resumes_repo import ResumesRepository
 from states import MenuState, LoadResumeState
 from utils.messages.menu import activate_main_menu
-from utils.resume import publish_document
+from utils.publish_resume import publish_document
 
 
 async def activate_load_document(
@@ -26,7 +27,7 @@ async def load_document(
         bot: Bot,
         message: Message,
         state: FSMContext,
-        conn: aiomysql.Connection,
+        repo: ResumesRepository,
 ) -> None:
     if message.document is None:
         logging.error("The document has not been delivered.")
@@ -44,9 +45,9 @@ async def load_document(
     await message.answer(
         f"Вы можете продолжать работу\n\nДокумент обрабатывается и через некоторое время будет доступен",
         reply_markup=get_menu_keyboard())
-    await activate_main_menu(message, state, conn)
+    await activate_main_menu(message, state, repo)
 
-    await publish_document(bot, conn, document)
+    await publish_document(bot, repo, document)
 
 
 def is_pdf(file_name: str | None) -> bool:
