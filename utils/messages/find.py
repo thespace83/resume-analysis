@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, FSInputFile
 
 from keyboards.default import get_cancel_and_update_keyboard
+from keyboards.default.filers_kb import get_file_watching_keyboard
 from models.resume import Resume
 from repositories.resumes_repo import ResumesRepository
 from states.find_resume import FindResumeState
@@ -58,8 +59,9 @@ async def examine_file(message: Message, state: FSMContext, repo: ResumesReposit
         resume = await repo.get_resume(number)
         document_url: str = resume.document_url
         document = FSInputFile(os.path.join(os.getcwd(), "documents", document_url),
-                               filename=(f"{resume.name.replace(" ", "-")}.pdf" if resume.name else "Резюме.pdf"))
+                               filename="Резюме.pdf")
         await message.answer_document(
             caption=await create_info(number, repo),
-            document=document
+            document=document,
+            reply_markup=get_file_watching_keyboard()
         )
