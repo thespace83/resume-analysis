@@ -14,7 +14,7 @@ async def activate_find_document(
     async def create_message() -> str:
         msg: str = f"Доступно {await repo.get_count_of_resumes()} файлов\n\n"
         for table_id, resume in (await repo.get_resumes(5, 0)).items():
-            msg += f"{table_id}> {resume.name if resume.name else 'Без имени'}\n"
+            msg += f"#{table_id}: {resume.name if resume.name else 'Без имени'}\n"
         msg += "\nВыставленные фильтры:"
         return msg
 
