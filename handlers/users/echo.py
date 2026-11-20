@@ -6,8 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from repositories.resumes_repo import ResumesRepository
-from states import MenuState, LoadResumeState
-
+from states import LoadResumeState
 from utils.messages.menu import activate_main_menu
 
 router = Router(name="users:echo")
