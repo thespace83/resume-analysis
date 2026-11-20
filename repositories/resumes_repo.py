@@ -25,6 +25,40 @@ class ResumesRepository:
                 row = await cur.fetchone()
                 return row[0]
 
+    async def get_resumes(self, limit: int, offset: int) -> dict[int, Resume]:
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute(
+                    """
+                    SELECT id, document_url, name, age, gender, education, region, profession, experience, type_of_employment, info, driving_license_category, own_car, citizenship, context
+                    FROM resumes
+                    ORDER BY id
+                    LIMIT %s OFFSET %s
+                    """,
+                    (limit, offset),
+                )
+                rows = await cur.fetchall()
+                resumes = {}
+                for row in rows:
+                    resumes[row[0]] = Resume(
+                        document_url=row[1],
+                        name=row[2],
+                        age=row[3],
+                        gender=row[4],
+                        education=row[5],
+                        region=row[6],
+                        profession=row[7],
+                        experience=row[8],
+                        type_of_employment=row[9],
+                        info=row[10],
+                        knowledge_of_languages=None,
+                        driving_license_category=row[11],
+                        own_car=row[12],
+                        citizenship=row[13],
+                        context=row[14]
+                    )
+                return resumes
+
     # async def get_by_user(self, user_id: int) -> list[Resume]:
     #     async with self.pool.acquire() as conn:
     #         async with conn.cursor(aiomysql.DictCursor) as cur:
