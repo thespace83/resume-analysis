@@ -5,17 +5,19 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from repositories.resumes_repo import ResumesRepository
 from states import MenuState, LoadResumeState
+
+from utils.messages.menu import activate_main_menu
 
 router = Router(name="users:echo")
 
 
-@router.message(MenuState.menu, F.text)
-async def echo_handler(message: Message, state: FSMContext) -> None:
-    await message.answer("Неизвестная команда\n\n" +
-                         "Используйте \"Загрузка\" для загрузки резюме или \"Поиск\" для поиска по доступным резюме")
-
-
 @router.message(LoadResumeState.waiting_for_document, F.text)
-async def echo_handler(message: Message, state: FSMContext) -> None:
+async def load_echo_handler(message: Message, state: FSMContext) -> None:
     await message.answer("Загрузите документ или используйте \"Отмена\"")
+
+
+@router.message()
+async def no_state_echo_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+    await activate_main_menu(message, state, repo)
