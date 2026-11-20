@@ -7,7 +7,7 @@ from aiogram.types import Message
 from repositories.resumes_repo import ResumesRepository
 from states import MenuState
 from states.find_resume import FindResumeState
-from utils.messages.find import activate_find_document
+from utils.messages.find import activate_find_document, examine_file
 from utils.messages.menu import activate_main_menu
 
 router = Router(name="users:find")
@@ -26,3 +26,8 @@ async def update_handler(message: Message, state: FSMContext, repo: ResumesRepos
 @router.message(FindResumeState.watching, F.text == "Отмена")
 async def cancel_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
     await activate_main_menu(message, state, repo)
+
+
+@router.message(FindResumeState.watching, F.text)
+async def file_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+    await examine_file(message, state, repo)

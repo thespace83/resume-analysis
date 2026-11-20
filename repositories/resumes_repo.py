@@ -59,6 +59,47 @@ class ResumesRepository:
                     )
                 return resumes
 
+    async def get_resume(self, number: int) -> Resume:
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute(
+                    """
+                    SELECT * FROM resumes WHERE id = %s;
+                    """,
+                    (number,),
+                )
+                rows = await cur.fetchall()
+                row = rows[0]
+                return Resume(
+                    document_url=row[1],
+                    name=row[2],
+                    age=row[3],
+                    gender=row[4],
+                    education=row[5],
+                    region=row[6],
+                    profession=row[7],
+                    experience=row[8],
+                    type_of_employment=row[9],
+                    info=row[10],
+                    knowledge_of_languages=None,
+                    driving_license_category=row[11],
+                    own_car=row[12],
+                    citizenship=row[13],
+                    context=row[14]
+                )
+
+    async def get_document_id(self, number: int) -> str:
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute(
+                    """
+                    SELECT document_url FROM resumes WHERE id = %s;
+                    """,
+                    (number,),
+                )
+                row = await cur.fetchall()
+                return row[0][0]
+
     # async def get_by_user(self, user_id: int) -> list[Resume]:
     #     async with self.pool.acquire() as conn:
     #         async with conn.cursor(aiomysql.DictCursor) as cur:
