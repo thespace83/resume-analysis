@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     use_redis: bool = False
     redis_host: str = "localhost"
     redis_port: int = 6379
+    DB_HOST: str = "localhost"
+    DB_PORT: int = 3306
+    DB_USER: str = "root"
+    DB_PASSWORD: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -3,3 +3,5 @@ pydantic-settings==2.14.1
 redis==8.0.0
 ollama
 pypdf
+aiomysql
+python-dotenv
