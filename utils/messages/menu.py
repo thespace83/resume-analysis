@@ -19,5 +19,4 @@ async def activate_main_menu(
         'Чтобы найти резюме используйте "Поиск"\n',
         reply_markup=get_menu_keyboard(),
     )
-
-    await message.answer(f"Всего пользователей: X")
+    await message.answer(f"Доступных документов: {await repo.get_count_of_resumes()}")

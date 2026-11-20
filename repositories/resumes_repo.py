@@ -18,6 +18,13 @@ class ResumesRepository:
                 )
                 return cur.lastrowid
 
+    async def get_count_of_resumes(self) -> int:
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute("SELECT COUNT(*) FROM resumes")
+                row = await cur.fetchone()
+                return row[0]
+
     # async def get_by_user(self, user_id: int) -> list[Resume]:
     #     async with self.pool.acquire() as conn:
     #         async with conn.cursor(aiomysql.DictCursor) as cur:
