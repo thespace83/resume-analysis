@@ -123,7 +123,7 @@ class ResumesRepository:
     ) -> int:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
-                query, params = search_count_of_resumes(name=name)
+                query, params = search_count_of_resumes(name=name, profession=profession)
                 await cur.execute(query, params)
                 row = await cur.fetchone()
                 return row[0]
@@ -149,7 +149,12 @@ class ResumesRepository:
     ) -> dict[int, Resume]:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
-                query, params = search_resumes(limit=limit, offset=offset, name=name)
+                query, params = search_resumes(
+                    limit=limit,
+                    offset=offset,
+                    name=name,
+                    profession=profession
+                )
                 await cur.execute(query, params)
                 rows = await cur.fetchall()
                 resumes = {}

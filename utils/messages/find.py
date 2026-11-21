@@ -87,9 +87,17 @@ async def create_resumes_message(
         repo: ResumesRepository
 ) -> str:
     name = await state.get_value("name")
-    msg: str = f"Найдено {await repo.get_count_of_resumes(name=name)} файлов\n\n"
+    profession = await state.get_value("profession")
+    msg: str = f"Найдено {await repo.get_count_of_resumes(
+        name=name,
+        profession=profession
+    )} файлов\n\n"
 
-    for table_id, resume in (await repo.get_resumes(10, 0, name=name)).items():
+    for table_id, resume in (await repo.get_resumes(
+            10, 0,
+            name=name,
+            profession=profession
+    )).items():
         msg += f"#{table_id}: {resume.name if resume.name else 'Без имени'}\n"
 
     msg += "\n<code>#номер</code> — исследовать файл"
@@ -102,9 +110,13 @@ async def create_filters_message(
     msg = "Активированные фильтры:\n"
     exists = False
     name: str | None = await state.get_value("name")
+    profession: str | None = await state.get_value("profession")
     if name is not None:
         exists = True
         msg += f" Имя: {name}\n"
+    if profession is not None:
+        exists = True
+        msg += f" Профессия: {profession}\n"
 
     if not exists:
         msg = "Фильтров не добавлено\n"

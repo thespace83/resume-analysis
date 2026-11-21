@@ -7,14 +7,18 @@ from states import FiltersState
 from utils.messages.find import activate_find_document
 
 
-async def apply_name_filters(
+async def apply_filter(
         message: Message,
         state: FSMContext,
-        repo: ResumesRepository
+        repo: ResumesRepository,
+        target: FilterTypes
 ) -> None:
     if message.text is None:
         return
-    await state.update_data(name=message.text)
+    if target == FilterTypes.NAME:
+        await state.update_data(name=message.text)
+    elif target == FilterTypes.PROFESSION:
+        await state.update_data(profession=message.text)
     await state.set_state(FiltersState.select_filter)
     await activate_find_document(message, state, repo)
 
@@ -27,4 +31,6 @@ async def reset_filters(
 ) -> None:
     if filter_type == FilterTypes.NAME:
         await state.update_data(name=None)
-        await activate_find_document(message, state, repo)
+    if filter_type == FilterTypes.PROFESSION:
+        await state.update_data(profession=None)
+    await activate_find_document(message, state, repo)
