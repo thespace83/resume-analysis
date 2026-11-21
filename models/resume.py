@@ -1,5 +1,23 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Optional
+
+
+class FilterTypes(Enum):
+    NAME = 0,
+    AGE = 1,
+    GENDER = 2,
+    EDUCATION = 3,
+    REGION = 4,
+    PROFESSION = 5,
+    EXPERIENCE = 6,
+    TYPE_OF_EMPLOYMENT = 7,
+    INFO = 8,
+    KNOWLEDGE_OF_LANGUAGES = 9,
+    DRIVING_LICENSE_CATEGORY = 10,
+    OWN_CAR = 11,
+    CITIZENSHIP = 12,
+    CONTEXT = 13
 
 
 @dataclass

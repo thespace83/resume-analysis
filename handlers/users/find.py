@@ -29,8 +29,8 @@ async def cancel_handler(message: Message, state: FSMContext, repo: ResumesRepos
 
 
 @router.message(FindResumeState.watching, F.text == "Фильтры")
-async def update_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
-    await activate_filters(message, state, repo)
+async def update_handler(message: Message, state: FSMContext) -> None:
+    await activate_filters(message, state)
 
 
 @router.message(FindResumeState.watching, F.text)

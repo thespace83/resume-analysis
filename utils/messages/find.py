@@ -35,7 +35,6 @@ async def activate_find_document(
 async def activate_filters(
         message: Message,
         state: FSMContext,
-        repo: ResumesRepository
 ) -> None:
     await state.set_state(FiltersState.select_filter)
     await message.answer(
