@@ -6,22 +6,32 @@ from repositories.resumes_repo import ResumesRepository
 from states import FiltersState
 from utils.messages.find import activate_find_document
 
+FILTER_FIELD: dict[FilterTypes, str] = {
+    FilterTypes.NAME: "name",
+    FilterTypes.PROFESSION: "profession",
+    FilterTypes.INFO: "info",
+    FilterTypes.GENDER: "gender",
+}
+
+GENDERS = {"Мужчина", "Женщина"}
+
 
 async def apply_filter(
         message: Message,
         state: FSMContext,
         repo: ResumesRepository,
-        target: FilterTypes
+        target: FilterTypes,
 ) -> None:
-    if message.text is None:
+    text = message.text
+    if text is None:
         return
-    if target == FilterTypes.NAME:
-        await state.update_data(name=message.text)
-    elif target == FilterTypes.PROFESSION:
-        await state.update_data(profession=message.text)
-    elif target == FilterTypes.INFO:
-        await state.update_data(info=message.text)
 
+    if target == FilterTypes.GENDER and text not in GENDERS:
+        await message.answer("Выберите \"Мужчина\" или \"Женщина\".")
+        return
+
+    field = FILTER_FIELD[target]
+    await state.update_data(**{field: text})
     await state.set_state(FiltersState.select_filter)
     await activate_find_document(message, state, repo)
 
@@ -32,10 +42,10 @@ async def reset_filters(
         repo: ResumesRepository,
         filter_type: FilterTypes
 ) -> None:
-    if filter_type == FilterTypes.NAME:
-        await state.update_data(name=None)
-    elif filter_type == FilterTypes.PROFESSION:
-        await state.update_data(profession=None)
-    elif filter_type == FilterTypes.INFO:
-        await state.update_data(info=None)
+    text = message.text
+    if text is None:
+        return
+
+    field = FILTER_FIELD[filter_type]
+    await state.update_data(**{field: None})
     await activate_find_document(message, state, repo)

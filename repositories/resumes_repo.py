@@ -123,7 +123,8 @@ class ResumesRepository:
                 query, params = search_count_of_resumes(
                     name=name,
                     profession=profession,
-                    info=info
+                    info=info,
+                    gender=gender
                 )
                 await cur.execute(query, params)
                 row = await cur.fetchone()
@@ -155,7 +156,8 @@ class ResumesRepository:
                     offset=offset,
                     name=name,
                     profession=profession,
-                    info=info
+                    info=info,
+                    gender=gender
                 )
                 await cur.execute(query, params)
                 rows = await cur.fetchall()

@@ -13,38 +13,45 @@ from utils.messages.find import activate_filters
 
 router = Router(name="users:apply_filter")
 
-
-@router.message(StateFilter(
+FILTER_STATES = (
     FiltersState.select_name,
     FiltersState.select_profession,
-), F.text == "Отмена")
+    FiltersState.select_info,
+    FiltersState.select_gender,
+)
+
+STATE_TO_FILTER: dict[str, FilterTypes] = {
+    FiltersState.select_name.state: FilterTypes.NAME,
+    FiltersState.select_profession.state: FilterTypes.PROFESSION,
+    FiltersState.select_info.state: FilterTypes.INFO,
+    FiltersState.select_gender.state: FilterTypes.GENDER,
+}
+
+
+async def _current_filter_type(state: FSMContext) -> FilterTypes | None:
+    return STATE_TO_FILTER.get(await state.get_state())
+
+
+@router.message(StateFilter(*FILTER_STATES), F.text == "Отмена")
 async def cancel_handler(message: Message, state: FSMContext) -> None:
     await activate_filters(message, state)
 
 
-@router.message(FiltersState.select_name, F.text == "Сбросить")
-async def reset_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
-    await reset_filters(message, state, repo, FilterTypes.NAME)
+@router.message(StateFilter(*FILTER_STATES), F.text == "Сбросить")
+async def reset_handler(
+        message: Message, state: FSMContext, repo: ResumesRepository
+) -> None:
+    filter_type = await _current_filter_type(state)
+    if filter_type is None:
+        return
+    await reset_filters(message, state, repo, filter_type)
 
 
-@router.message(FiltersState.select_profession, F.text == "Сбросить")
-async def reset_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
-    await reset_filters(message, state, repo, FilterTypes.PROFESSION)
-
-@router.message(FiltersState.select_info, F.text == "Сбросить")
-async def reset_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
-    await reset_filters(message, state, repo, FilterTypes.INFO)
-
-
-@router.message(FiltersState.select_name, F.text)
-async def name_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
-    await apply_filter(message, state, repo, FilterTypes.NAME)
-
-
-@router.message(FiltersState.select_profession, F.text)
-async def name_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
-    await apply_filter(message, state, repo, FilterTypes.PROFESSION)
-
-@router.message(FiltersState.select_info, F.text)
-async def name_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
-    await apply_filter(message, state, repo, FilterTypes.INFO)
+@router.message(StateFilter(*FILTER_STATES), F.text)
+async def apply_handler(
+        message: Message, state: FSMContext, repo: ResumesRepository
+) -> None:
+    filter_type = await _current_filter_type(state)
+    if filter_type is None:
+        return
+    await apply_filter(message, state, repo, filter_type)

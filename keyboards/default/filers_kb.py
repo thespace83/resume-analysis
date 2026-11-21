@@ -37,3 +37,16 @@ def apply_filters_keyboard() -> ReplyKeyboardMarkup:
         KeyboardButton(text="Сбросить"),
     )
     return builder.as_markup(resize_keyboard=True)
+
+
+def select_gender_keyboard() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="Мужчина"),
+        KeyboardButton(text="Женщина"),
+    )
+    builder.row(
+        KeyboardButton(text="Отмена"),
+        KeyboardButton(text="Сбросить"),
+    )
+    return builder.as_markup(resize_keyboard=True)
