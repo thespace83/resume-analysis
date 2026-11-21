@@ -30,3 +30,10 @@ def get_select_filter_keyboard() -> ReplyKeyboardMarkup:
     return builder.as_markup(resize_keyboard=True)
 
 
+def apply_filters_keyboard() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="Отмена"),
+        KeyboardButton(text="Сбросить"),
+    )
+    return builder.as_markup(resize_keyboard=True)

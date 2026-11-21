@@ -1,7 +1,7 @@
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from keyboards.default import get_cancel_keyboard
+from keyboards.default import apply_filters_keyboard
 from states import FiltersState
 
 
@@ -12,7 +12,7 @@ async def activate_name_filters(
     await state.set_state(FiltersState.select_name)
     await message.answer(
         "Введите имя или часть имени кандидата",
-        reply_markup=get_cancel_keyboard()
+        reply_markup=apply_filters_keyboard()
     )
 
 #
