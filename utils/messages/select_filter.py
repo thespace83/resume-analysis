@@ -1,49 +1,42 @@
+from typing import Callable
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from keyboards.default import apply_filters_keyboard, select_gender_keyboard
+from models.resume import FilterTypes
 from states import FiltersState
 
-
-async def activate_name_filters(
-        message: Message,
-        state: FSMContext,
-) -> None:
-    await state.set_state(FiltersState.select_name)
-    await message.answer(
+ANSWER: dict[FiltersState, tuple[str, Callable]] = {
+    FiltersState.select_name: (
         "Введите имя или часть имени кандидата",
-        reply_markup=apply_filters_keyboard()
-    )
-
-
-async def activate_profession_filters(
-        message: Message,
-        state: FSMContext,
-) -> None:
-    await state.set_state(FiltersState.select_profession)
-    await message.answer(
+        apply_filters_keyboard,
+    ),
+    FiltersState.select_profession: (
         "Введите название или часть названия профессии кандидата",
-        reply_markup=apply_filters_keyboard()
-    )
+        apply_filters_keyboard,
 
-
-async def activate_info_filters(
-        message: Message,
-        state: FSMContext,
-) -> None:
-    await state.set_state(FiltersState.select_info)
-    await message.answer(
+    ),
+    FiltersState.select_info: (
         "Введите ключевое слово/предложение из информации о кандидате",
-        reply_markup=apply_filters_keyboard()
+        apply_filters_keyboard,
+
+    ),
+    FiltersState.select_gender: (
+        "Выберите гендер кандидата",
+        select_gender_keyboard,
     )
+}
 
 
-async def activate_gender_filters(
+async def activate_filter(
         message: Message,
         state: FSMContext,
+        target_state: FiltersState,
 ) -> None:
-    await state.set_state(FiltersState.select_gender)
+    print(target_state)
+    answer = ANSWER[target_state]
+    await state.set_state(target_state)
     await message.answer(
-        "Выберите гендер кандидата",
-        reply_markup=select_gender_keyboard()
+        answer[0],
+        reply_markup=answer[1]()
     )

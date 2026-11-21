@@ -6,31 +6,29 @@ from aiogram.types import Message
 
 from repositories.resumes_repo import ResumesRepository
 from states import FiltersState
-from utils.messages.select_filter import activate_name_filters, activate_profession_filters, activate_info_filters, \
-    activate_gender_filters
-from utils.messages.find import activate_find_document
+from utils.messages.select_filter import activate_filter
+from utils.messages.find import activate_find_document, activate_filters
 
 router = Router(name="users:select_filter")
 
+TYPES: dict[str, FiltersState] = {
+    "Имя": FiltersState.select_name,
+    "Профессия": FiltersState.select_profession,
+    "Доп. информация": FiltersState.select_info,
+    "Гендер": FiltersState.select_gender,
+}
 
-@router.message(FiltersState.select_filter, F.text == "Имя")
+
+@router.message(FiltersState.select_filter)
 async def name_handler(message: Message, state: FSMContext) -> None:
-    await activate_name_filters(message, state)
-
-
-@router.message(FiltersState.select_filter, F.text == "Профессия")
-async def name_handler(message: Message, state: FSMContext) -> None:
-    await activate_profession_filters(message, state)
-
-
-@router.message(FiltersState.select_filter, F.text == "Доп. информация")
-async def name_handler(message: Message, state: FSMContext) -> None:
-    await activate_info_filters(message, state)
-
-
-@router.message(FiltersState.select_filter, F.text == "Гендер")
-async def name_handler(message: Message, state: FSMContext) -> None:
-    await activate_gender_filters(message, state)
+    text = message.text
+    if text is None:
+        await activate_filters(message, state)
+        return
+    if text not in TYPES:
+        await activate_filters(message, state)
+        return
+    await activate_filter(message, state, TYPES[text])
 
 
 @router.message(FiltersState.select_filter, F.text == "Отмена")
