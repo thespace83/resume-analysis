@@ -13,7 +13,7 @@ async def apply_name_filters(
     if message.text is None:
         return
     await message.answer(f"Не добавлен фильтр \"{await state.get_value("name")}\" для имени кандидата")
-    await state.update_data(name=message.text.lower())
+    await state.update_data(name=message.text)
     await state.set_state(FiltersState.select_filter)
     await message.answer(f"Добавлен фильтр \"{await state.get_value("name")}\" для имени кандидата")
     await activate_filters(message, state)
