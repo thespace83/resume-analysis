@@ -28,3 +28,5 @@ def get_select_filter_keyboard() -> ReplyKeyboardMarkup:
     )
     builder.row(KeyboardButton(text="Отмена"))
     return builder.as_markup(resize_keyboard=True)
+
+

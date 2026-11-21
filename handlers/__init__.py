@@ -4,7 +4,7 @@ from __future__ import annotations
 from aiogram import Router
 
 from . import channels, errors, groups
-from .users import callbacks, echo, help, start, load, find, select_filer
+from .users import callbacks, echo, help, start, load, find, select_filer, apply_filter
 
 
 def setup_routers() -> Router:
@@ -19,6 +19,7 @@ def setup_routers() -> Router:
         load.router,
         find.router,
         select_filer.router,
+        apply_filter.router,
         echo.router,
     )
     return router

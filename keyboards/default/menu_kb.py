@@ -19,5 +19,3 @@ def get_cancel_keyboard() -> ReplyKeyboardMarkup:
         KeyboardButton(text="Отмена")
     )
     return builder.as_markup(resize_keyboard=True)
-
-
