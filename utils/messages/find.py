@@ -16,36 +16,13 @@ async def activate_find_document(
         state: FSMContext,
         repo: ResumesRepository
 ) -> None:
-    async def create_resumes_message() -> str:
-        name = await state.get_value("name")
-        msg: str = f"Найдено {await repo.get_count_of_resumes(name=name)} файлов\n\n"
-
-        for table_id, resume in (await repo.get_resumes(10, 0, name=name)).items():
-            msg += f"#{table_id}: {resume.name if resume.name else 'Без имени'}\n"
-
-        msg += "\n<code>#номер</code> — исследовать файл"
-        return msg
-
-    async def create_filters_message() -> str:
-        msg = "Активированные фильтры:\n"
-        exists = False
-        name: str | None = await state.get_value("name")
-        if name is not None:
-            exists = True
-            msg += f" Имя: {name}\n"
-
-        if not exists:
-            msg = "Фильтров не добавлено\n"
-
-        return msg
-
     await state.set_state(FindResumeState.watching)
 
     await message.answer(
-        await create_filters_message()
+        await create_filters_message(state)
     )
     await message.answer(
-        await create_resumes_message(),
+        await create_resumes_message(state, repo),
         reply_markup=get_find_files_keyboard()
     )
 
@@ -103,3 +80,33 @@ async def examine_file(message: Message, state: FSMContext, repo: ResumesReposit
             document=document,
             reply_markup=get_file_watching_keyboard()
         )
+
+
+async def create_resumes_message(
+        state: FSMContext,
+        repo: ResumesRepository
+) -> str:
+    name = await state.get_value("name")
+    msg: str = f"Найдено {await repo.get_count_of_resumes(name=name)} файлов\n\n"
+
+    for table_id, resume in (await repo.get_resumes(10, 0, name=name)).items():
+        msg += f"#{table_id}: {resume.name if resume.name else 'Без имени'}\n"
+
+    msg += "\n<code>#номер</code> — исследовать файл"
+    return msg
+
+
+async def create_filters_message(
+        state: FSMContext,
+) -> str:
+    msg = "Активированные фильтры:\n"
+    exists = False
+    name: str | None = await state.get_value("name")
+    if name is not None:
+        exists = True
+        msg += f" Имя: {name}\n"
+
+    if not exists:
+        msg = "Фильтров не добавлено\n"
+
+    return msg
