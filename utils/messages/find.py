@@ -88,15 +88,19 @@ async def create_resumes_message(
 ) -> str:
     name = await state.get_value("name")
     profession = await state.get_value("profession")
+    info = await state.get_value("info")
+
     msg: str = f"Найдено {await repo.get_count_of_resumes(
         name=name,
-        profession=profession
+        profession=profession,
+        info=info,
     )} файлов\n\n"
 
     for table_id, resume in (await repo.get_resumes(
             10, 0,
             name=name,
-            profession=profession
+            profession=profession,
+            info=info,
     )).items():
         msg += f"#{table_id}: {resume.name if resume.name else 'Без имени'}\n"
 

@@ -19,6 +19,9 @@ async def apply_filter(
         await state.update_data(name=message.text)
     elif target == FilterTypes.PROFESSION:
         await state.update_data(profession=message.text)
+    elif target == FilterTypes.INFO:
+        await state.update_data(info=message.text)
+
     await state.set_state(FiltersState.select_filter)
     await activate_find_document(message, state, repo)
 
@@ -31,6 +34,8 @@ async def reset_filters(
 ) -> None:
     if filter_type == FilterTypes.NAME:
         await state.update_data(name=None)
-    if filter_type == FilterTypes.PROFESSION:
+    elif filter_type == FilterTypes.PROFESSION:
         await state.update_data(profession=None)
+    elif filter_type == FilterTypes.INFO:
+        await state.update_data(info=None)
     await activate_find_document(message, state, repo)

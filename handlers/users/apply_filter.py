@@ -31,6 +31,10 @@ async def reset_handler(message: Message, state: FSMContext, repo: ResumesReposi
 async def reset_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
     await reset_filters(message, state, repo, FilterTypes.PROFESSION)
 
+@router.message(FiltersState.select_info, F.text == "Сбросить")
+async def reset_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+    await reset_filters(message, state, repo, FilterTypes.INFO)
+
 
 @router.message(FiltersState.select_name, F.text)
 async def name_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
@@ -40,3 +44,7 @@ async def name_handler(message: Message, state: FSMContext, repo: ResumesReposit
 @router.message(FiltersState.select_profession, F.text)
 async def name_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
     await apply_filter(message, state, repo, FilterTypes.PROFESSION)
+
+@router.message(FiltersState.select_info, F.text)
+async def name_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+    await apply_filter(message, state, repo, FilterTypes.INFO)

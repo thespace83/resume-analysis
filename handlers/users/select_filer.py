@@ -6,7 +6,7 @@ from aiogram.types import Message
 
 from repositories.resumes_repo import ResumesRepository
 from states import FiltersState
-from utils.messages.select_filter import activate_name_filters, activate_profession_filters
+from utils.messages.select_filter import activate_name_filters, activate_profession_filters, activate_info_filters
 from utils.messages.find import activate_find_document
 
 router = Router(name="users:select_filter")
@@ -20,6 +20,11 @@ async def name_handler(message: Message, state: FSMContext) -> None:
 @router.message(FiltersState.select_filter, F.text == "Профессия")
 async def name_handler(message: Message, state: FSMContext) -> None:
     await activate_profession_filters(message, state)
+
+
+@router.message(FiltersState.select_filter, F.text == "Доп. информация")
+async def name_handler(message: Message, state: FSMContext) -> None:
+    await activate_info_filters(message, state)
 
 
 @router.message(FiltersState.select_filter, F.text == "Отмена")

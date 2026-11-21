@@ -25,10 +25,7 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
     like_fields = {
         "name": name,
         "profession": profession,
-        "experience": experience,
         "info": info,
-        "knowledge_of_languages": knowledge_of_languages,
-        "context": context,
     }
     for column, value in like_fields.items():
         if value is not None:
@@ -123,7 +120,11 @@ class ResumesRepository:
     ) -> int:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
-                query, params = search_count_of_resumes(name=name, profession=profession)
+                query, params = search_count_of_resumes(
+                    name=name,
+                    profession=profession,
+                    info=info
+                )
                 await cur.execute(query, params)
                 row = await cur.fetchone()
                 return row[0]
@@ -153,7 +154,8 @@ class ResumesRepository:
                     limit=limit,
                     offset=offset,
                     name=name,
-                    profession=profession
+                    profession=profession,
+                    info=info
                 )
                 await cur.execute(query, params)
                 rows = await cur.fetchall()
