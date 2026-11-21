@@ -4,7 +4,7 @@ from aiogram.types import Message
 from models.resume import FilterTypes
 from repositories.resumes_repo import ResumesRepository
 from states import FiltersState
-from utils.messages.find import activate_filters, activate_find_document
+from utils.messages.find import activate_find_document
 
 
 async def apply_name_filters(
