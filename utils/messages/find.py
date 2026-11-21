@@ -16,7 +16,7 @@ async def activate_find_document(
         state: FSMContext,
         repo: ResumesRepository
 ) -> None:
-    async def create_message() -> str:
+    async def create_resumes_message() -> str:
         msg: str = f"Доступно {await repo.get_count_of_resumes()} файлов\n\n"
 
         for table_id, resume in (await repo.get_resumes(10, 0)).items():
@@ -25,9 +25,26 @@ async def activate_find_document(
         msg += "\n<code>#номер</code> — исследовать файл"
         return msg
 
+    async def create_filters_message() -> str:
+        msg = "Активированные фильтры:\n"
+        exists = False
+        name: str | None = await state.get_value("name")
+        if name is not None:
+            exists = True
+            msg += f" Имя: {name}\n"
+
+        if not exists:
+            msg = "Фильтров не добавлено\n"
+
+        return msg
+
     await state.set_state(FindResumeState.watching)
+
     await message.answer(
-        await create_message(),
+        await create_filters_message()
+    )
+    await message.answer(
+        await create_resumes_message(),
         reply_markup=get_find_files_keyboard()
     )
 
