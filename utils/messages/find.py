@@ -3,7 +3,7 @@ import os
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, FSInputFile
 
-from keyboards.default import get_cancel_and_update_keyboard
+from keyboards.default import get_find_files_keyboard
 from keyboards.default.filers_kb import get_file_watching_keyboard
 from models.resume import Resume
 from repositories.resumes_repo import ResumesRepository
@@ -48,7 +48,7 @@ async def activate_find_document(
     await state.set_state(FindResumeState.watching)
     await message.answer(
         await create_message(repo),
-        reply_markup=get_cancel_and_update_keyboard()
+        reply_markup=get_find_files_keyboard()
     )
 
 
