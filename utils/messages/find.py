@@ -17,9 +17,10 @@ async def activate_find_document(
         repo: ResumesRepository
 ) -> None:
     async def create_resumes_message() -> str:
-        msg: str = f"Найдено {await repo.get_count_of_resumes()} файлов\n\n"
+        name = await state.get_value("name")
+        msg: str = f"Найдено {await repo.get_count_of_resumes(name=name)} файлов\n\n"
 
-        for table_id, resume in (await repo.get_resumes(10, 0, name=await state.get_value("name"))).items():
+        for table_id, resume in (await repo.get_resumes(10, 0, name=name)).items():
             msg += f"#{table_id}: {resume.name if resume.name else 'Без имени'}\n"
 
         msg += "\n<code>#номер</code> — исследовать файл"

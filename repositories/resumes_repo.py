@@ -2,17 +2,14 @@ import aiomysql
 from models.resume import Resume
 
 
-def search_resumes(
-        name=None, age=None, gender=None, education=None, region=None,
-        profession=None, experience=None, type_of_employment=None,
-        info=None, knowledge_of_languages=None,
-        driving_license_category=None, own_car=None, citizenship=None,
-        context=None, limit=20, offset=0,
-):
+def get_where_clause(name=None, age=None, gender=None, education=None, region=None,
+                     profession=None, experience=None, type_of_employment=None,
+                     info=None, knowledge_of_languages=None,
+                     driving_license_category=None, own_car=None, citizenship=None,
+                     context=None) -> tuple[str, list]:
     filters = []
     params = []
 
-    # --- Точное совпадение ---
     exact_fields = {
         "gender": gender,
         "education": education,
@@ -38,8 +35,23 @@ def search_resumes(
             filters.append(f"{column} LIKE %s")
             params.append(f"%{value}%")
 
-    where_clause = ("WHERE " + " AND ".join(filters)) if filters else ""
+    return ("WHERE " + " AND ".join(filters)) if filters else "", params
 
+
+def search_resumes(
+        name=None, age=None, gender=None, education=None, region=None,
+        profession=None, experience=None, type_of_employment=None,
+        info=None, knowledge_of_languages=None,
+        driving_license_category=None, own_car=None, citizenship=None,
+        context=None, limit=20, offset=0,
+):
+    where_clause, params = get_where_clause(name=name, age=age, gender=gender, education=education, region=region,
+                                            profession=profession, experience=experience,
+                                            type_of_employment=type_of_employment,
+                                            info=info, knowledge_of_languages=knowledge_of_languages,
+                                            driving_license_category=driving_license_category, own_car=own_car,
+                                            citizenship=citizenship,
+                                            context=context)
     query = f"""
         SELECT id, document_url, name, age, gender, education, region,
                profession, experience, type_of_employment, info,
@@ -50,6 +62,29 @@ def search_resumes(
         LIMIT %s OFFSET %s
     """
     params.extend([limit, offset])
+    return query, params
+
+
+def search_count_of_resumes(
+        name=None, age=None, gender=None, education=None, region=None,
+        profession=None, experience=None, type_of_employment=None,
+        info=None, knowledge_of_languages=None,
+        driving_license_category=None, own_car=None, citizenship=None,
+        context=None
+):
+    where_clause, params = get_where_clause(name=name, age=age, gender=gender, education=education, region=region,
+                                            profession=profession, experience=experience,
+                                            type_of_employment=type_of_employment,
+                                            info=info, knowledge_of_languages=knowledge_of_languages,
+                                            driving_license_category=driving_license_category, own_car=own_car,
+                                            citizenship=citizenship,
+                                            context=context)
+
+    query = f"""
+        SELECT COUNT(*)
+        FROM resumes
+        {where_clause}
+    """
     return query, params
 
 
@@ -69,10 +104,27 @@ class ResumesRepository:
                 )
                 return cur.lastrowid
 
-    async def get_count_of_resumes(self) -> int:
+    async def get_count_of_resumes(
+            self,
+            name=None,
+            age=None,
+            gender=None,
+            education=None,
+            region=None,
+            profession=None,
+            experience=None,
+            type_of_employment=None,
+            info=None,
+            knowledge_of_languages=None,
+            driving_license_category=None,
+            own_car=None,
+            citizenship=None,
+            context=None,
+    ) -> int:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
-                await cur.execute("SELECT COUNT(*) FROM resumes")
+                query, params = search_count_of_resumes(name=name)
+                await cur.execute(query, params)
                 row = await cur.fetchone()
                 return row[0]
 
