@@ -16,7 +16,6 @@ async def apply_name_filters(
         return
     await state.update_data(name=message.text)
     await state.set_state(FiltersState.select_filter)
-    await message.answer(f"Добавлен фильтр \"{await state.get_value("name")}\" для имени кандидата")
     await activate_find_document(message, state, repo)
 
 
