@@ -111,18 +111,22 @@ async def create_resumes_message(
 async def create_filters_message(
         state: FSMContext,
 ) -> str:
-    msg = "Активированные фильтры:\n"
+    params = {
+        "name": "Имя",
+        "profession": "Профессия",
+        "info": "Доп. информация",
+        "gender": "Гендер"
+    }
+
+    filters = ""
     exists = False
-    name: str | None = await state.get_value("name")
-    profession: str | None = await state.get_value("profession")
-    if name is not None:
-        exists = True
-        msg += f" Имя: {name}\n"
-    if profession is not None:
-        exists = True
-        msg += f" Профессия: {profession}\n"
+    for param, name in params.items():
+        value = await state.get_value(param)
+        if value is not None:
+            exists = True
+            filters += f" {name}: {value}\n"
 
-    if not exists:
-        msg = "Фильтров не добавлено\n"
-
-    return msg
+    if exists:
+        return "Активированные фильтры:\n" + filters
+    else:
+        return "Фильтров не добавлено"
