@@ -1,8 +1,6 @@
 import asyncio
 import os
-from typing import Optional
 
-import aiomysql
 from aiogram import Bot
 from aiogram.types import Downloadable
 from pypdf import PdfReader
