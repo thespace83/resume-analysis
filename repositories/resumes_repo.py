@@ -2,6 +2,57 @@ import aiomysql
 from models.resume import Resume
 
 
+def search_resumes(
+        name=None, age=None, gender=None, education=None, region=None,
+        profession=None, experience=None, type_of_employment=None,
+        info=None, knowledge_of_languages=None,
+        driving_license_category=None, own_car=None, citizenship=None,
+        context=None, limit=20, offset=0,
+):
+    filters = []
+    params = []
+
+    # --- Точное совпадение ---
+    exact_fields = {
+        "gender": gender,
+        "education": education,
+        "type_of_employment": type_of_employment,
+        "driving_license_category": driving_license_category,
+        "own_car": own_car,
+    }
+    for column, value in exact_fields.items():
+        if value is not None:
+            filters.append(f"{column} = %s")
+            params.append(value)
+
+    like_fields = {
+        "name": name,
+        "profession": profession,
+        "experience": experience,
+        "info": info,
+        "knowledge_of_languages": knowledge_of_languages,
+        "context": context,
+    }
+    for column, value in like_fields.items():
+        if value is not None:
+            filters.append(f"{column} LIKE %s")
+            params.append(f"%{value}%")
+
+    where_clause = ("WHERE " + " AND ".join(filters)) if filters else ""
+
+    query = f"""
+        SELECT id, document_url, name, age, gender, education, region,
+               profession, experience, type_of_employment, info,
+               driving_license_category, own_car, citizenship, context
+        FROM resumes
+        {where_clause}
+        ORDER BY id
+        LIMIT %s OFFSET %s
+    """
+    params.extend([limit, offset])
+    return query, params
+
+
 class ResumesRepository:
     def __init__(self, pool: aiomysql.Pool):
         self.pool = pool
@@ -25,18 +76,29 @@ class ResumesRepository:
                 row = await cur.fetchone()
                 return row[0]
 
-    async def get_resumes(self, limit: int, offset: int) -> dict[int, Resume]:
+    async def get_resumes(
+            self,
+            limit: int,
+            offset: int,
+            name=None,
+            age=None,
+            gender=None,
+            education=None,
+            region=None,
+            profession=None,
+            experience=None,
+            type_of_employment=None,
+            info=None,
+            knowledge_of_languages=None,
+            driving_license_category=None,
+            own_car=None,
+            citizenship=None,
+            context=None,
+    ) -> dict[int, Resume]:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
-                await cur.execute(
-                    """
-                    SELECT id, document_url, name, age, gender, education, region, profession, experience, type_of_employment, info, driving_license_category, own_car, citizenship, context
-                    FROM resumes
-                    ORDER BY id
-                    LIMIT %s OFFSET %s
-                    """,
-                    (limit, offset),
-                )
+                query, params = search_resumes(limit=limit, offset=offset, name=name)
+                await cur.execute(query, params)
                 rows = await cur.fetchall()
                 resumes = {}
                 for row in rows:
@@ -64,7 +126,9 @@ class ResumesRepository:
             async with conn.cursor() as cur:
                 await cur.execute(
                     """
-                    SELECT * FROM resumes WHERE id = %s;
+                    SELECT *
+                    FROM resumes
+                    WHERE id = %s;
                     """,
                     (number,),
                 )
@@ -96,7 +160,9 @@ class ResumesRepository:
             async with conn.cursor() as cur:
                 await cur.execute(
                     """
-                    SELECT document_url FROM resumes WHERE id = %s;
+                    SELECT document_url
+                    FROM resumes
+                    WHERE id = %s;
                     """,
                     (number,),
                 )
