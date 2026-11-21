@@ -40,7 +40,7 @@ async def publish_document(bot: Bot, repo: ResumesRepository, document: Download
         return Resume(
             document_url=f"{document.file_id}.pdf",
             name=str(data['name']),
-            age=int(data['age']),
+            age=None if int(data['age']) == -1 else int(data['age']),
             gender=str(data['gender']),
             education=str(data['education']),
             region=str(data['region']),

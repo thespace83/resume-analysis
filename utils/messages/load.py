@@ -1,6 +1,5 @@
 import logging
 
-import aiomysql
 from aiogram import Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -47,7 +46,14 @@ async def load_document(
         reply_markup=get_menu_keyboard())
     await activate_main_menu(message, state, repo)
 
-    await publish_document(bot, repo, document)
+    try:
+        await publish_document(bot, repo, document)
+    except TimeoutError:
+        await message.reply(
+            text="Документ не загрузился, попробуйте ещё раз"
+        )
+    except Exception as err:
+        logging.error(err)
 
 
 def is_pdf(file_name: str | None) -> bool:
