@@ -124,7 +124,8 @@ class ResumesRepository:
                     name=name,
                     profession=profession,
                     info=info,
-                    gender=gender
+                    gender=gender,
+                    own_car=own_car
                 )
                 await cur.execute(query, params)
                 row = await cur.fetchone()
@@ -157,7 +158,8 @@ class ResumesRepository:
                     name=name,
                     profession=profession,
                     info=info,
-                    gender=gender
+                    gender=gender,
+                    own_car=own_car
                 )
                 await cur.execute(query, params)
                 rows = await cur.fetchall()

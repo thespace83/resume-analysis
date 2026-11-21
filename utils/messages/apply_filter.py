@@ -11,9 +11,11 @@ FILTER_FIELD: dict[FilterTypes, str] = {
     FilterTypes.PROFESSION: "profession",
     FilterTypes.INFO: "info",
     FilterTypes.GENDER: "gender",
+    FilterTypes.OWN_CAR: "own_car"
 }
 
 GENDERS = {"Мужчина", "Женщина"}
+OWN_CAR_VARIANTS = {"Да", "Нет"}
 
 
 async def apply_filter(
@@ -28,6 +30,10 @@ async def apply_filter(
 
     if target == FilterTypes.GENDER and text not in GENDERS:
         await message.answer("Выберите \"Мужчина\" или \"Женщина\".")
+        return
+
+    if target == FilterTypes.OWN_CAR and text not in OWN_CAR_VARIANTS:
+        await message.answer("Выберите \"Да\" или \"Нет\".")
         return
 
     field = FILTER_FIELD[target]

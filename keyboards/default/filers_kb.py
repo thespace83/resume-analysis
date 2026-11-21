@@ -50,3 +50,16 @@ def select_gender_keyboard() -> ReplyKeyboardMarkup:
         KeyboardButton(text="Сбросить"),
     )
     return builder.as_markup(resize_keyboard=True)
+
+
+def select_own_car_keyboard() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="Да"),
+        KeyboardButton(text="Нет"),
+    )
+    builder.row(
+        KeyboardButton(text="Отмена"),
+        KeyboardButton(text="Сбросить"),
+    )
+    return builder.as_markup(resize_keyboard=True)
