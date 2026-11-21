@@ -19,10 +19,10 @@ async def cancel_handler(message: Message, state: FSMContext) -> None:
 
 
 @router.message(FiltersState.select_name, F.text == "Сбросить")
-async def reset_handler(state: FSMContext) -> None:
-    await reset_filters(state, FilterTypes.NAME)
+async def reset_handler(message: Message, state: FSMContext, repo: ResumesRepository, ) -> None:
+    await reset_filters(message, state, repo, FilterTypes.NAME)
 
 
 @router.message(FiltersState.select_name, F.text)
 async def name_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
-    await apply_name_filters(message, state)
+    await apply_name_filters(message, state, repo)
