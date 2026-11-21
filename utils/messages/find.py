@@ -8,7 +8,7 @@ from keyboards.default.find_kb import get_file_watching_keyboard
 from keyboards.default.filers_kb import get_select_filter_keyboard
 from models.resume import Resume
 from repositories.resumes_repo import ResumesRepository
-from states.find_resume import FindResumeState
+from states import FiltersState, FindResumeState
 
 
 async def activate_find_document(
@@ -37,7 +37,7 @@ async def activate_filters(
         state: FSMContext,
         repo: ResumesRepository
 ) -> None:
-    await state.set_state(FindResumeState.select_filter)
+    await state.set_state(FiltersState.select_filter)
     await message.answer(
         "Выберите желаемый фильтр",
         reply_markup=get_select_filter_keyboard()

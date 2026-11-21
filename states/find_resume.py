@@ -5,4 +5,3 @@ class FindResumeState(StatesGroup):
     watching = State()
     waiting_for_filters = State()
     watching_target = State()
-    select_filter = State()
