@@ -24,6 +24,11 @@ TYPES: dict[str, FiltersState] = {
 }
 
 
+@router.message(FiltersState.select_filter, F.text == "Отмена")
+async def cancel_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+    await activate_find_document(message, state, repo)
+
+
 @router.message(FiltersState.select_filter)
 async def filter_handler(message: Message, state: FSMContext) -> None:
     text = message.text
@@ -34,8 +39,3 @@ async def filter_handler(message: Message, state: FSMContext) -> None:
         await activate_filters(message, state)
         return
     await activate_filter(message, state, TYPES[text])
-
-
-@router.message(FiltersState.select_filter, F.text == "Отмена")
-async def cancel_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
-    await activate_find_document(message, state, repo)
