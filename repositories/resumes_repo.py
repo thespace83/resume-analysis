@@ -17,7 +17,7 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
         if value is not None:
             symbol = value[0]
             number = value[1:]
-            filters.append(f"{column} {symbol} %s")
+            filters.append(f"{column} {symbol}{"=" if symbol != "=" else ""} %s")
             params.append(number)
 
     exact_fields = {
