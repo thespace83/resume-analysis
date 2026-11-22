@@ -35,6 +35,7 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
         "profession": profession,
         "info": info,
         "education": education,
+        "region": region
     }
     for column, value in like_fields.items():
         if value is not None:

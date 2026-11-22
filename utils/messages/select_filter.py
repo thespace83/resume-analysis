@@ -48,6 +48,10 @@ ANSWER: dict[FiltersState, tuple[str, Callable]] = {
                    "\n>3 для выбора от 3-х и более лет" +
                    "\n<3 для выбора от 3-х и менее лет"),
         apply_filters_keyboard,
+    ),
+    FiltersState.select_region: (
+        "Введите регион работы кандидата",
+        apply_filters_keyboard
     )
 }
 

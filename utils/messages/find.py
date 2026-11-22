@@ -95,6 +95,7 @@ async def create_resumes_message(
     own_car = await state.get_value("own_car")
     age = await state.get_value("age")
     experience = await state.get_value("experience")
+    region = await state.get_value("region")
 
     params = {
         "name": name,
@@ -104,7 +105,8 @@ async def create_resumes_message(
         "gender": gender,
         "own_car": own_car,
         "age": age,
-        "experience": experience
+        "experience": experience,
+        "region": region,
     }
     msg: str = f"Найдено {await repo.get_count_of_resumes(
         **params
@@ -122,7 +124,7 @@ async def create_resumes_message(
 async def create_filters_message(
         state: FSMContext,
 ) -> str:
-    params = {
+    names = {
         "name": "Имя",
         "age": "Возраст",
         "profession": "Профессия",
@@ -131,11 +133,12 @@ async def create_filters_message(
         "own_car": "Свой автомобиль",
         "education": "Образование",
         "experience": "Опыт работы",
+        "region": "Регион",
     }
 
     filters = ""
     exists = False
-    for param, name in params.items():
+    for param, name in names.items():
         value = await state.get_value(param)
         if value is not None:
             exists = True

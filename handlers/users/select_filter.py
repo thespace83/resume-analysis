@@ -20,6 +20,7 @@ TYPES: dict[str, FiltersState] = {
     "Доп. информация": FiltersState.select_info,
     "Свой автомобиль": FiltersState.select_own_car,
     "Опыт работы": FiltersState.select_experience,
+    "Регион": FiltersState.select_region,
 }
 
 
