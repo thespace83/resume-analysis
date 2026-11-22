@@ -15,6 +15,7 @@ FILTER_FIELD: dict[FilterTypes, str] = {
     FilterTypes.OWN_CAR: "own_car",
     FilterTypes.AGE: "age",
     FilterTypes.EDUCATION: "education",
+    FilterTypes.EXPERIENCE: "experience",
 }
 
 GENDERS = {"Мужчина", "Женщина"}
@@ -41,6 +42,10 @@ async def apply_filter(
 
     if target == FilterTypes.AGE and (text[0] not in {"=", "<", ">"} or not text[1:].isdigit()):
         await activate_filter(message, state, FiltersState.select_age)
+        return
+
+    if target == FilterTypes.EXPERIENCE and (text[0] not in {"=", "<", ">"} or not text[1:].isdigit()):
+        await activate_filter(message, state, FiltersState.select_experience)
         return
 
     field = FILTER_FIELD[target]

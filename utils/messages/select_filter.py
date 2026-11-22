@@ -41,6 +41,13 @@ ANSWER: dict[FiltersState, tuple[str, Callable]] = {
     FiltersState.select_education: (
         "Введите уровень образования кандидата",
         select_education_keyboard,
+    ),
+    FiltersState.select_experience: (
+        html.quote("Введите опыт работы кандидата в годах" +
+                   "\n=3 для точного указания" +
+                   "\n>3 для выбора от 3-х и более лет" +
+                   "\n<3 для выбора от 3-х и менее лет"),
+        apply_filters_keyboard,
     )
 }
 

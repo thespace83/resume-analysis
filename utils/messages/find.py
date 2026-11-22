@@ -94,26 +94,24 @@ async def create_resumes_message(
     gender = await state.get_value("gender")
     own_car = await state.get_value("own_car")
     age = await state.get_value("age")
+    experience = await state.get_value("experience")
 
+    params = {
+        "name": name,
+        "education": education,
+        "profession": profession,
+        "info": info,
+        "gender": gender,
+        "own_car": own_car,
+        "age": age,
+        "experience": experience
+    }
     msg: str = f"Найдено {await repo.get_count_of_resumes(
-        name=name,
-        education=education,
-        profession=profession,
-        info=info,
-        gender=gender,
-        own_car=own_car,
-        age=age,
+        **params
     )} файлов\n\n"
 
     for table_id, resume in (await repo.get_resumes(
-            10, 0,
-            name=name,
-            education=education,
-            profession=profession,
-            info=info,
-            gender=gender,
-            own_car=own_car,
-            age=age,
+            10, 0, **params
     )).items():
         msg += f"#{table_id}: {resume.name if resume.name else 'Без имени'}\n"
 
@@ -131,7 +129,8 @@ async def create_filters_message(
         "info": "Доп. информация",
         "gender": "Гендер",
         "own_car": "Свой автомобиль",
-        "education": "Образование"
+        "education": "Образование",
+        "experience": "Опыт работы",
     }
 
     filters = ""

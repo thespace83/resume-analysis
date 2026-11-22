@@ -12,6 +12,7 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
 
     int_fields = {
         "age": age,
+        "experience": experience,
     }
     for column, value in int_fields.items():
         if value is not None:

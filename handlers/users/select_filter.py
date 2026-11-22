@@ -19,6 +19,7 @@ TYPES: dict[str, FiltersState] = {
     "Профессия": FiltersState.select_profession,
     "Доп. информация": FiltersState.select_info,
     "Свой автомобиль": FiltersState.select_own_car,
+    "Опыт работы": FiltersState.select_experience,
 }
 
 
