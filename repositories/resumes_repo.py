@@ -69,8 +69,6 @@ def search_resumes(
         LIMIT %s OFFSET %s
     """
     params.extend([limit, offset])
-    print(query)
-    print(params)
     return query, params
 
 
