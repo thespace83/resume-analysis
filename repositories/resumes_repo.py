@@ -11,7 +11,7 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
     params = []
 
     int_fields = {
-        "age": age
+        "age": age,
     }
     for column, value in int_fields.items():
         if value is not None:
@@ -22,9 +22,6 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
 
     exact_fields = {
         "gender": gender,
-        "education": education,
-        "type_of_employment": type_of_employment,
-        "driving_license_category": driving_license_category,
         "own_car": own_car,
     }
     for column, value in exact_fields.items():
@@ -36,6 +33,7 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
         "name": name,
         "profession": profession,
         "info": info,
+        "education": education,
     }
     for column, value in like_fields.items():
         if value is not None:
@@ -131,12 +129,10 @@ class ResumesRepository:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
                 query, params = search_count_of_resumes(
-                    name=name,
-                    age=age,
-                    profession=profession,
-                    info=info,
-                    gender=gender,
-                    own_car=own_car
+                    name=name, age=age, gender=gender, education=education, region=region, profession=profession,
+                    experience=experience, type_of_employment=type_of_employment, info=info,
+                    knowledge_of_languages=knowledge_of_languages, driving_license_category=driving_license_category,
+                    own_car=own_car, citizenship=citizenship, context=context
                 )
                 await cur.execute(query, params)
                 row = await cur.fetchone()
@@ -164,14 +160,10 @@ class ResumesRepository:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
                 query, params = search_resumes(
-                    limit=limit,
-                    offset=offset,
-                    name=name,
-                    age=age,
-                    profession=profession,
-                    info=info,
-                    gender=gender,
-                    own_car=own_car
+                    limit=limit, offset=offset, name=name, age=age, gender=gender, education=education, region=region,
+                    profession=profession, experience=experience, type_of_employment=type_of_employment, info=info,
+                    knowledge_of_languages=knowledge_of_languages, driving_license_category=driving_license_category,
+                    own_car=own_car, citizenship=citizenship, context=context
                 )
                 await cur.execute(query, params)
                 rows = await cur.fetchall()

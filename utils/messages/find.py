@@ -88,6 +88,7 @@ async def create_resumes_message(
         repo: ResumesRepository
 ) -> str:
     name = await state.get_value("name")
+    education = await state.get_value("education")
     profession = await state.get_value("profession")
     info = await state.get_value("info")
     gender = await state.get_value("gender")
@@ -96,6 +97,7 @@ async def create_resumes_message(
 
     msg: str = f"Найдено {await repo.get_count_of_resumes(
         name=name,
+        education=education,
         profession=profession,
         info=info,
         gender=gender,
@@ -106,6 +108,7 @@ async def create_resumes_message(
     for table_id, resume in (await repo.get_resumes(
             10, 0,
             name=name,
+            education=education,
             profession=profession,
             info=info,
             gender=gender,
@@ -128,6 +131,7 @@ async def create_filters_message(
         "info": "Доп. информация",
         "gender": "Гендер",
         "own_car": "Свой автомобиль",
+        "education": "Образование"
     }
 
     filters = ""

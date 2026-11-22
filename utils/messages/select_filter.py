@@ -36,6 +36,10 @@ ANSWER: dict[FiltersState, tuple[str, Callable]] = {
                    "\n>18 для выбора от 18 и старше" +
                    "\n<18 для выбора от 18 и младше"),
         apply_filters_keyboard,
+    ),
+    FiltersState.select_education: (
+        "Введите уровень образования кандидата",
+        apply_filters_keyboard,
     )
 }
 

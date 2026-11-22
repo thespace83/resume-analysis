@@ -14,6 +14,7 @@ FILTER_FIELD: dict[FilterTypes, str] = {
     FilterTypes.GENDER: "gender",
     FilterTypes.OWN_CAR: "own_car",
     FilterTypes.AGE: "age",
+    FilterTypes.EDUCATION: "education",
 }
 
 GENDERS = {"Мужчина", "Женщина"}
