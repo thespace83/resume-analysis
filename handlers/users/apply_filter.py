@@ -23,6 +23,7 @@ FILTER_STATES = (
     FiltersState.select_own_car,
     FiltersState.select_experience,
     FiltersState.select_region,
+    FiltersState.select_type_of_employment,
 )
 
 STATE_TO_FILTER: dict[str, FilterTypes] = {
@@ -35,6 +36,7 @@ STATE_TO_FILTER: dict[str, FilterTypes] = {
     FiltersState.select_own_car.state: FilterTypes.OWN_CAR,
     FiltersState.select_experience.state: FilterTypes.EXPERIENCE,
     FiltersState.select_region.state: FilterTypes.REGION,
+    FiltersState.select_type_of_employment.state: FilterTypes.TYPE_OF_EMPLOYMENT,
 }
 
 

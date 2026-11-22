@@ -77,3 +77,17 @@ def select_education_keyboard() -> ReplyKeyboardMarkup:
         KeyboardButton(text="Сбросить"),
     )
     return builder.as_markup(resize_keyboard=True)
+
+
+def select_type_of_employment_keyboard() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="постоянная работа"),
+        KeyboardButton(text="подработка"),
+        KeyboardButton(text="стажировка"),
+    )
+    builder.row(
+        KeyboardButton(text="Отмена"),
+        KeyboardButton(text="Сбросить"),
+    )
+    return builder.as_markup(resize_keyboard=True)

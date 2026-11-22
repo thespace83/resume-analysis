@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from keyboards.default import apply_filters_keyboard, select_gender_keyboard, select_own_car_keyboard, \
-    select_education_keyboard
+    select_education_keyboard, select_type_of_employment_keyboard
 from states import FiltersState
 
 ANSWER: dict[FiltersState, tuple[str, Callable]] = {
@@ -52,7 +52,11 @@ ANSWER: dict[FiltersState, tuple[str, Callable]] = {
     FiltersState.select_region: (
         "Введите регион работы кандидата",
         apply_filters_keyboard
-    )
+    ),
+    FiltersState.select_type_of_employment: (
+        "Введите тип занятости кандидата",
+        select_type_of_employment_keyboard
+    ),
 }
 
 
