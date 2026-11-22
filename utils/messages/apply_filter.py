@@ -19,6 +19,7 @@ FILTER_FIELD: dict[FilterTypes, str] = {
     FilterTypes.REGION: "region",
     FilterTypes.TYPE_OF_EMPLOYMENT: "type_of_employment",
     FilterTypes.CITIZENSHIP: "citizenship",
+    FilterTypes.DRIVING_LICENSE_CATEGORY: "driving_license_category",
 }
 
 GENDERS = {"Мужчина", "Женщина"}

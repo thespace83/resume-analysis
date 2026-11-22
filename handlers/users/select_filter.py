@@ -22,7 +22,8 @@ TYPES: dict[str, FiltersState] = {
     "Опыт работы": FiltersState.select_experience,
     "Регион": FiltersState.select_region,
     "Тип занятости": FiltersState.select_type_of_employment,
-    "Гражданство": FiltersState.select_citizenship
+    "Гражданство": FiltersState.select_citizenship,
+    "Водительские права": FiltersState.select_driving_license_category,
 }
 
 
