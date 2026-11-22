@@ -112,7 +112,15 @@ class ResumesRepository:
                      resume.profession, resume.experience, resume.type_of_employment, resume.info,
                      resume.driving_license_category, resume.own_car, resume.citizenship, resume.context)
                 )
-                return cur.lastrowid
+                resume_id = cur.lastrowid
+                if resume.knowledge_of_languages is not None:
+                    for knowledge in resume.knowledge_of_languages:
+                        await cur.execute(
+                            "INSERT INTO `knowledge-of-languages` (`resume_id`, `language`, `level`) " +
+                            "VALUES (%s, %s, %s)",
+                            (resume_id, knowledge['language'], knowledge['level'])
+                        )
+                return resume_id
 
     async def get_count_of_resumes(
             self,
