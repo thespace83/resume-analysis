@@ -74,6 +74,12 @@ async def examine_file(message: Message, state: FSMContext, repo: ResumesReposit
             msg += f"Водительские права: {r.driving_license_category or ''}\n"
             msg += f"Свой автомобиль: {r.own_car or ''}\n"
             msg += f"Гражданство: {r.citizenship or ''}\n"
+            if r.knowledge_of_languages is not None:
+                msg += "Знание языков:\n"
+                for knowledge_of_language in r.knowledge_of_languages:
+                    language, level = knowledge_of_language["language"], knowledge_of_language["level"]
+                    msg += f" {language} ({level})\n"
+
             return msg
 
         await message.answer_document(

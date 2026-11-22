@@ -215,9 +215,9 @@ class ResumesRepository:
                 rows = await cur.fetchall()
                 if len(rows) == 0:
                     return None
-
                 row = rows[0]
-                return Resume(
+
+                resume = Resume(
                     document_url=row[1],
                     name=row[2],
                     age=row[3],
@@ -234,6 +234,26 @@ class ResumesRepository:
                     citizenship=row[13],
                     context=row[14]
                 )
+
+                await cur.execute(
+                    """
+                    SELECT *
+                    FROM `knowledge-of-languages`
+                    WHERE resume_id = %s;
+                    """,
+                    (number,),
+                )
+
+                rows = await cur.fetchall()
+                knowledge_of_languages = []
+                for row in rows:
+                    knowledge_of_languages.append({
+                        "language": row[1],
+                        "level": row[2]
+                    })
+                resume.knowledge_of_languages = knowledge_of_languages
+
+                return resume
 
     async def get_document_id(self, number: int) -> str:
         async with self.pool.acquire() as conn:
