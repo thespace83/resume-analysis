@@ -97,6 +97,7 @@ async def create_resumes_message(
     experience = await state.get_value("experience")
     region = await state.get_value("region")
     type_of_employment = await state.get_value("type_of_employment")
+    citizenship = await state.get_value("citizenship")
 
     params = {
         "name": name,
@@ -109,6 +110,7 @@ async def create_resumes_message(
         "experience": experience,
         "region": region,
         "type_of_employment": type_of_employment,
+        "citizenship": citizenship
     }
     msg: str = f"Найдено {await repo.get_count_of_resumes(
         **params
@@ -136,7 +138,8 @@ async def create_filters_message(
         "education": "Образование",
         "experience": "Опыт работы",
         "region": "Регион",
-        "type_of_employment": "Тип занятости"
+        "type_of_employment": "Тип занятости",
+        "citizenship": "Гражданство",
     }
 
     filters = ""

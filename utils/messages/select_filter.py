@@ -57,6 +57,10 @@ ANSWER: dict[FiltersState, tuple[str, Callable]] = {
         "Введите тип занятости кандидата",
         select_type_of_employment_keyboard
     ),
+    FiltersState.select_citizenship: (
+        "Введите гражданство кандидата",
+        apply_filters_keyboard
+    )
 }
 
 
