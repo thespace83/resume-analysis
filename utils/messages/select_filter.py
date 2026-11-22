@@ -4,7 +4,8 @@ from aiogram import html
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from keyboards.default import apply_filters_keyboard, select_gender_keyboard, select_own_car_keyboard
+from keyboards.default import apply_filters_keyboard, select_gender_keyboard, select_own_car_keyboard, \
+    select_education_keyboard
 from states import FiltersState
 
 ANSWER: dict[FiltersState, tuple[str, Callable]] = {
@@ -39,7 +40,7 @@ ANSWER: dict[FiltersState, tuple[str, Callable]] = {
     ),
     FiltersState.select_education: (
         "Введите уровень образования кандидата",
-        apply_filters_keyboard,
+        select_education_keyboard,
     )
 }
 

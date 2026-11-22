@@ -63,3 +63,17 @@ def select_own_car_keyboard() -> ReplyKeyboardMarkup:
         KeyboardButton(text="Сбросить"),
     )
     return builder.as_markup(resize_keyboard=True)
+
+
+def select_education_keyboard() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="среднее"),
+        KeyboardButton(text="средне специальное"),
+        KeyboardButton(text="высшее"),
+    )
+    builder.row(
+        KeyboardButton(text="Отмена"),
+        KeyboardButton(text="Сбросить"),
+    )
+    return builder.as_markup(resize_keyboard=True)
