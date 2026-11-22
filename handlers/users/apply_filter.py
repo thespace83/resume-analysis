@@ -15,6 +15,7 @@ router = Router(name="users:apply_filter")
 
 FILTER_STATES = (
     FiltersState.select_name,
+    FiltersState.select_age,
     FiltersState.select_profession,
     FiltersState.select_info,
     FiltersState.select_gender,
@@ -23,6 +24,7 @@ FILTER_STATES = (
 
 STATE_TO_FILTER: dict[str, FilterTypes] = {
     FiltersState.select_name.state: FilterTypes.NAME,
+    FiltersState.select_age.state: FilterTypes.AGE,
     FiltersState.select_profession.state: FilterTypes.PROFESSION,
     FiltersState.select_info.state: FilterTypes.INFO,
     FiltersState.select_gender.state: FilterTypes.GENDER,

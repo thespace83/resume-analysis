@@ -5,13 +5,15 @@ from models.resume import FilterTypes
 from repositories.resumes_repo import ResumesRepository
 from states import FiltersState
 from utils.messages.find import activate_find_document
+from utils.messages.select_filter import activate_filter
 
 FILTER_FIELD: dict[FilterTypes, str] = {
     FilterTypes.NAME: "name",
     FilterTypes.PROFESSION: "profession",
     FilterTypes.INFO: "info",
     FilterTypes.GENDER: "gender",
-    FilterTypes.OWN_CAR: "own_car"
+    FilterTypes.OWN_CAR: "own_car",
+    FilterTypes.AGE: "age",
 }
 
 GENDERS = {"Мужчина", "Женщина"}
@@ -34,6 +36,10 @@ async def apply_filter(
 
     if target == FilterTypes.OWN_CAR and text not in OWN_CAR_VARIANTS:
         await message.answer("Выберите \"Да\" или \"Нет\".")
+        return
+
+    if target == FilterTypes.AGE and (text[0] not in {"=", "<", ">"} or not text[1:].isdigit()):
+        await activate_filter(message, state, FiltersState.select_age)
         return
 
     field = FILTER_FIELD[target]

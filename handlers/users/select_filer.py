@@ -13,6 +13,7 @@ router = Router(name="users:select_filter")
 
 TYPES: dict[str, FiltersState] = {
     "Имя": FiltersState.select_name,
+    "Возраст": FiltersState.select_age,
     "Профессия": FiltersState.select_profession,
     "Доп. информация": FiltersState.select_info,
     "Гендер": FiltersState.select_gender,
@@ -21,7 +22,7 @@ TYPES: dict[str, FiltersState] = {
 
 
 @router.message(FiltersState.select_filter)
-async def name_handler(message: Message, state: FSMContext) -> None:
+async def filter_handler(message: Message, state: FSMContext) -> None:
     text = message.text
     if text is None:
         await activate_filters(message, state)

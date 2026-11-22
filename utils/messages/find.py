@@ -1,5 +1,6 @@
 import os
 
+from aiogram import html
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, FSInputFile
 
@@ -19,7 +20,7 @@ async def activate_find_document(
     await state.set_state(FindResumeState.watching)
 
     await message.answer(
-        await create_filters_message(state)
+        html.quote(await create_filters_message(state))
     )
     await message.answer(
         await create_resumes_message(state, repo),
@@ -91,13 +92,15 @@ async def create_resumes_message(
     info = await state.get_value("info")
     gender = await state.get_value("gender")
     own_car = await state.get_value("own_car")
+    age = await state.get_value("age")
 
     msg: str = f"Найдено {await repo.get_count_of_resumes(
         name=name,
         profession=profession,
         info=info,
         gender=gender,
-        own_car=own_car
+        own_car=own_car,
+        age=age,
     )} файлов\n\n"
 
     for table_id, resume in (await repo.get_resumes(
@@ -107,6 +110,7 @@ async def create_resumes_message(
             info=info,
             gender=gender,
             own_car=own_car,
+            age=age,
     )).items():
         msg += f"#{table_id}: {resume.name if resume.name else 'Без имени'}\n"
 
@@ -119,6 +123,7 @@ async def create_filters_message(
 ) -> str:
     params = {
         "name": "Имя",
+        "age": "Возраст",
         "profession": "Профессия",
         "info": "Доп. информация",
         "gender": "Гендер",

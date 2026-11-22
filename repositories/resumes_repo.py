@@ -10,6 +10,16 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
     filters = []
     params = []
 
+    int_fields = {
+        "age": age
+    }
+    for column, value in int_fields.items():
+        if value is not None:
+            symbol = value[0]
+            number = value[1:]
+            filters.append(f"{column} {symbol} %s")
+            params.append(number)
+
     exact_fields = {
         "gender": gender,
         "education": education,
@@ -59,6 +69,8 @@ def search_resumes(
         LIMIT %s OFFSET %s
     """
     params.extend([limit, offset])
+    print(query)
+    print(params)
     return query, params
 
 
@@ -122,6 +134,7 @@ class ResumesRepository:
             async with conn.cursor() as cur:
                 query, params = search_count_of_resumes(
                     name=name,
+                    age=age,
                     profession=profession,
                     info=info,
                     gender=gender,
@@ -156,6 +169,7 @@ class ResumesRepository:
                     limit=limit,
                     offset=offset,
                     name=name,
+                    age=age,
                     profession=profession,
                     info=info,
                     gender=gender,

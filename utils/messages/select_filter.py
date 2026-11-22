@@ -1,5 +1,6 @@
 from typing import Callable
 
+from aiogram import html
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
@@ -28,6 +29,13 @@ ANSWER: dict[FiltersState, tuple[str, Callable]] = {
     FiltersState.select_own_car: (
         "Укажите, есть ли у кандидата автомобиль",
         select_own_car_keyboard
+    ),
+    FiltersState.select_age: (
+        html.quote("Введите возраст кандидата в формате" +
+                   "\n=18 для точного указания" +
+                   "\n>18 для выбора от 18 и старше" +
+                   "\n<18 для выбора от 18 и младше"),
+        apply_filters_keyboard,
     )
 }
 
