@@ -51,6 +51,8 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
         for knowledge in knowledge_of_languages:
             filters.append(f"`knowledge-of-languages`.`language` = %s")
             params.append(f"{knowledge["language"]}")
+            filters.append(f"`knowledge-of-languages`.`level` = %s")
+            params.append(f"{knowledge["level"]}")
 
     if knowledge_of_languages is None:
         return ("WHERE " + " AND ".join(filters)) if filters else "", params
