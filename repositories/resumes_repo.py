@@ -131,7 +131,42 @@ class ResumesRepository:
                             "VALUES (%s, %s, %s)",
                             (resume_id, knowledge['language'], knowledge['level'])
                         )
+                await self.write_similar_resumes(resume_id, resume.context)
+
                 return resume_id
+
+    async def write_similar_resumes(self, resume_id: int, context: str):
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                print(f"""
+                    SELECT r.id
+                    FROM resumes AS r
+                             CROSS JOIN (SELECT MAX(MATCH (context) AGAINST("%s")) AS max_relevance
+                                         FROM resumes) AS max_rel
+                    WHERE MATCH (r.context) AGAINST("%s") >= 0.9 * max_rel.max_relevance
+                      AND r.id != {resume_id}
+                      AND max_rel.max_relevance
+                        > 0;
+                    """.replace("%s", context.replace("\n", "\\n")))
+                await cur.execute(
+                    """
+                    SELECT r.id
+                    FROM resumes AS r
+                             CROSS JOIN (SELECT MAX(MATCH (context) AGAINST("%s")) AS max_relevance
+                                         FROM resumes) AS max_rel
+                    WHERE MATCH (r.context) AGAINST("%s") >= 0.9 * max_rel.max_relevance
+                      AND r.id != %s
+                      AND max_rel.max_relevance
+                        > 0;
+                    """, (context, context, resume_id))
+
+                rows = await cur.fetchall()
+                for number in [row[0] for row in rows]:
+                    await cur.execute(
+                        "INSERT INTO `similar_resumes` (`id`, `similar`) " +
+                        "VALUES (%s, %s)",
+                        (resume_id, number)
+                    )
 
     async def get_count_of_resumes(
             self,
