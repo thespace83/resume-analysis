@@ -80,8 +80,6 @@ def search_resumes(
         ORDER BY id
         LIMIT %s OFFSET %s
     """
-    logging.info(query)
-    logging.info(params)
 
     params.extend([limit, offset])
     return query, params
@@ -108,8 +106,6 @@ def search_count_of_resumes(
         {where_clause}
     """
 
-    logging.info(query)
-    logging.info(params)
     return query, params
 
 
