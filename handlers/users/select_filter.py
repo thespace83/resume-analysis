@@ -24,6 +24,7 @@ TYPES: dict[str, FiltersState] = {
     "Тип занятости": FiltersState.select_type_of_employment,
     "Гражданство": FiltersState.select_citizenship,
     "Водительские права": FiltersState.select_driving_license_category,
+    "Знание языков": FiltersState.select_knowledge_of_languages,
 }
 
 

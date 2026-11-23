@@ -20,6 +20,7 @@ FILTER_FIELD: dict[FilterTypes, str] = {
     FilterTypes.TYPE_OF_EMPLOYMENT: "type_of_employment",
     FilterTypes.CITIZENSHIP: "citizenship",
     FilterTypes.DRIVING_LICENSE_CATEGORY: "driving_license_category",
+    FilterTypes.KNOWLEDGE_OF_LANGUAGES: "knowledge_of_languages",
 }
 
 GENDERS = {"Мужчина", "Женщина"}
@@ -50,6 +51,10 @@ async def apply_filter(
 
     if target == FilterTypes.EXPERIENCE and (text[0] not in {"=", "<", ">"} or not text[1:].isdigit()):
         await activate_filter(message, state, FiltersState.select_experience)
+        return
+
+    if target == FilterTypes.KNOWLEDGE_OF_LANGUAGES and len(text.split()) != 2:
+        await activate_filter(message, state, FiltersState.select_knowledge_of_languages)
         return
 
     field = FILTER_FIELD[target]

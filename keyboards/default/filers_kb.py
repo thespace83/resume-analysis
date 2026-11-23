@@ -20,6 +20,7 @@ def get_select_filter_keyboard() -> ReplyKeyboardMarkup:
         KeyboardButton(text="Регион"),
         KeyboardButton(text="Тип занятости"),
         KeyboardButton(text="Гражданство"),
+        KeyboardButton(text="Знание языков"),
     )
     builder.row(
         KeyboardButton(text="Доп. информация"),
@@ -101,6 +102,19 @@ def select_driving_license_category_keyboard() -> ReplyKeyboardMarkup:
         KeyboardButton(text="C"),
         KeyboardButton(text="D"),
         KeyboardButton(text="E"),
+    )
+    builder.row(
+        KeyboardButton(text="Отмена"),
+        KeyboardButton(text="Сбросить"),
+    )
+    return builder.as_markup(resize_keyboard=True)
+
+
+def select_knowledge_of_languages_keyboard() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="Русский Родной"),
+        KeyboardButton(text="Английский C1"),
     )
     builder.row(
         KeyboardButton(text="Отмена"),

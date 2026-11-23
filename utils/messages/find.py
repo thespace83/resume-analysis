@@ -105,6 +105,7 @@ async def create_resumes_message(
     type_of_employment = await state.get_value("type_of_employment")
     citizenship = await state.get_value("citizenship")
     driving_license_category = await state.get_value("driving_license_category")
+    knowledge_of_languages = await state.get_value("knowledge_of_languages")
 
     params = {
         "name": name,
@@ -118,7 +119,8 @@ async def create_resumes_message(
         "region": region,
         "type_of_employment": type_of_employment,
         "citizenship": citizenship,
-        "driving_license_category": driving_license_category
+        "driving_license_category": driving_license_category,
+        "knowledge_of_languages": knowledge_of_languages,
     }
     msg: str = f"Найдено {await repo.get_count_of_resumes(
         **params
@@ -149,6 +151,7 @@ async def create_filters_message(
         "type_of_employment": "Тип занятости",
         "citizenship": "Гражданство",
         "driving_license_category": "Водительские права",
+        "knowledge_of_languages": "Знание языков",
     }
 
     filters = ""

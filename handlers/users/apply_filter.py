@@ -26,6 +26,7 @@ FILTER_STATES = (
     FiltersState.select_type_of_employment,
     FiltersState.select_citizenship,
     FiltersState.select_driving_license_category,
+    FiltersState.select_knowledge_of_languages,
 )
 
 STATE_TO_FILTER: dict[str, FilterTypes] = {
@@ -41,6 +42,7 @@ STATE_TO_FILTER: dict[str, FilterTypes] = {
     FiltersState.select_type_of_employment.state: FilterTypes.TYPE_OF_EMPLOYMENT,
     FiltersState.select_citizenship.state: FilterTypes.CITIZENSHIP,
     FiltersState.select_driving_license_category: FilterTypes.DRIVING_LICENSE_CATEGORY,
+    FiltersState.select_knowledge_of_languages.state: FilterTypes.KNOWLEDGE_OF_LANGUAGES,
 }
 
 
