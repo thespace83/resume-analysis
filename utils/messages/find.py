@@ -59,6 +59,7 @@ async def examine_file(message: Message, state: FSMContext, repo: ResumesReposit
 
         async def get_info() -> str | None:
             r: Resume | None = await repo.get_resume(number)
+            s: list[int] = await repo.get_similar_resumes(number)
             if r is None:
                 return None
 
@@ -79,6 +80,11 @@ async def examine_file(message: Message, state: FSMContext, repo: ResumesReposit
                 for knowledge_of_language in r.knowledge_of_languages:
                     language, level = knowledge_of_language["language"], knowledge_of_language["level"]
                     msg += f" {language} ({level})\n"
+
+            if s:
+                msg += f"Аналогичные файлы: "
+                for t in s:
+                    msg += f" #{t}"
 
             return msg
 

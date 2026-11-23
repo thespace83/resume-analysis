@@ -301,6 +301,31 @@ class ResumesRepository:
 
                 return resume
 
+    async def get_similar_resumes(self, resume_id: int) -> list[int]:
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                similar = []
+                await cur.execute(
+                    """
+                    SELECT `resume-analysis`.similar_resumes.similar
+                    FROM `resume-analysis`.similar_resumes
+                    WHERE `resume-analysis`.similar_resumes.id = %s;
+                    """,
+                    (resume_id,),
+                )
+                similar += [row[0] for row in await cur.fetchall()]
+                await cur.execute(
+                    """
+                    SELECT `resume-analysis`.similar_resumes.id
+                    FROM `resume-analysis`.similar_resumes
+                    WHERE `resume-analysis`.similar_resumes.similar = %s;
+                    """,
+                    (resume_id,),
+                )
+                similar += [row[0] for row in await cur.fetchall()]
+
+                return similar
+
     async def get_document_id(self, number: int) -> str:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
