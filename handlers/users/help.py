@@ -13,10 +13,8 @@ router = Router(name="users:help")
 @router.message(Command("help"))
 async def help_handler(message: Message) -> None:
     await message.answer(
-        "<b>Available commands:</b>\n"
-        "/start — start the bot and see an inline keyboard example\n"
-        "/help — show this message\n\n"
-        "Any text you send will be echoed back.\n"
-        "Try /start to see inline buttons with premium icon support.",
+        "<b>Анализатор резюме</b>\n"
+        "/start — чтобы начать работу\n"
+        "/help — для вывода этого сообщения.",
         reply_markup=get_help_keyboard(),
     )
