@@ -252,7 +252,7 @@ class ResumesRepository:
                     """
                     SELECT *
                     FROM `knowledge-of-languages`
-                    WHERE resume_id = %s;
+                    WHERE id = %s;
                     """,
                     (number,),
                 )
