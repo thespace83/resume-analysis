@@ -1,3 +1,5 @@
+import logging
+
 import aiomysql
 from models.resume import Resume
 
@@ -42,10 +44,17 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
     }
     for column, value in like_fields.items():
         if value is not None:
-            filters.append(f"{column} LIKE %s")
+            filters.append(f"`resumes`.{column} LIKE %s")
             params.append(f"%{value}%")
 
-    return ("WHERE " + " AND ".join(filters)) if filters else "", params
+    if knowledge_of_languages is not None:
+        for knowledge in knowledge_of_languages:
+            filters.append(f"`knowledge-of-languages`.`language` = %s")
+            params.append(f"{knowledge["language"]}")
+
+    if knowledge_of_languages is None:
+        return ("WHERE " + " AND ".join(filters)) if filters else "", params
+    return ("JOIN `knowledge-of-languages` USING(id) " + "WHERE " + " AND ".join(filters)) if filters else "", params
 
 
 def search_resumes(
@@ -63,14 +72,15 @@ def search_resumes(
                                             citizenship=citizenship,
                                             context=context)
     query = f"""
-        SELECT id, document_url, name, age, gender, education, region,
-               profession, experience, type_of_employment, info,
-               driving_license_category, own_car, citizenship, context
+        SELECT resumes.*
         FROM resumes
         {where_clause}
         ORDER BY id
         LIMIT %s OFFSET %s
     """
+    logging.info(query)
+    logging.info(params)
+
     params.extend([limit, offset])
     return query, params
 
@@ -95,6 +105,9 @@ def search_count_of_resumes(
         FROM resumes
         {where_clause}
     """
+
+    logging.info(query)
+    logging.info(params)
     return query, params
 
 
@@ -116,7 +129,7 @@ class ResumesRepository:
                 if resume.knowledge_of_languages is not None:
                     for knowledge in resume.knowledge_of_languages:
                         await cur.execute(
-                            "INSERT INTO `knowledge-of-languages` (`resume_id`, `language`, `level`) " +
+                            "INSERT INTO `knowledge-of-languages` (`id`, `language`, `level`) " +
                             "VALUES (%s, %s, %s)",
                             (resume_id, knowledge['language'], knowledge['level'])
                         )

@@ -120,8 +120,12 @@ async def create_resumes_message(
         "type_of_employment": type_of_employment,
         "citizenship": citizenship,
         "driving_license_category": driving_license_category,
-        "knowledge_of_languages": knowledge_of_languages,
     }
+    if knowledge_of_languages is not None:
+        params["knowledge_of_languages"] = [{
+            "language": str(knowledge_of_languages).split()[0],
+            "level": str(knowledge_of_languages).split()[1],
+        }]
     msg: str = f"Найдено {await repo.get_count_of_resumes(
         **params
     )} файлов\n\n"
