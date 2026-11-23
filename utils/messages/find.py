@@ -18,6 +18,7 @@ async def activate_find_document(
         repo: ResumesRepository
 ) -> None:
     await state.set_state(FindResumeState.watching)
+    await state.update_data(target=None)
 
     await message.answer(
         html.quote(await create_filters_message(state))
@@ -56,6 +57,7 @@ async def examine_file(message: Message, state: FSMContext, repo: ResumesReposit
                                filename="Резюме.pdf")
 
         await state.set_state(FindResumeState.watching_target)
+        await state.update_data(target=number)
 
         async def get_info() -> str | None:
             r: Resume | None = await repo.get_resume(number)
