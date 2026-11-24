@@ -1,4 +1,5 @@
-"""Collects all routers into a single root router."""
+"""Collects all routers into a single root router.
+"""
 from __future__ import annotations
 
 from aiogram import Router
