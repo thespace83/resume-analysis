@@ -17,7 +17,7 @@ async def activate_load_document(
 ) -> None:
     await state.set_state(LoadResumeState.waiting_for_document)
     await message.answer(
-        f"Загрузите Ваш документ\n\nДоступные форматы: pdf",
+        f"Загрузите Ваш документ\n\nДоступные форматы: pdf, docx",
         reply_markup=get_cancel_keyboard()
     )
 
@@ -33,7 +33,7 @@ async def load_document(
         return
     document = message.document
 
-    if not is_pdf(document.file_name):
+    if not is_available_format(document.file_name):
         await message.answer(f"Формат \".{document.file_name.split(".")[-1:][0]}\" не поддерживается")
         return
     if not has_correct_size(document.file_size):
@@ -56,8 +56,8 @@ async def load_document(
         logging.error(err)
 
 
-def is_pdf(file_name: str | None) -> bool:
-    return (file_name is not None) and (file_name.split(".")[-1:][0] == "pdf")
+def is_available_format(file_name: str | None) -> bool:
+    return (file_name is not None) and (file_name.split(".")[-1:][0] == "pdf" or file_name.split(".")[-1:][0] == "docx")
 
 
 def has_correct_size(file_size: int | None) -> bool:
