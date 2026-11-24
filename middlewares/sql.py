@@ -14,7 +14,7 @@ async def get_pool() -> aiomysql.Pool:
         port=settings.DB_PORT,
         user=settings.DB_USER,
         password=settings.DB_PASSWORD,
-        db="resume-analysis",
+        db=settings.DB_NAME,
         autocommit=True,
         minsize=1,
         maxsize=10,

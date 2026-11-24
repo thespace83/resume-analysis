@@ -52,7 +52,7 @@ async def examine_file(message: Message, state: FSMContext, repo: ResumesReposit
             await activate_find_document(message, state, repo)
             return
 
-        document_url: str = resume.document_url
+        document_url: str = resume.url
         document_type = document_url.split(".")[-1]
         document = FSInputFile(os.path.join(os.getcwd(), "documents", document_url),
                                filename=f"Резюме.{document_type}")
@@ -72,7 +72,7 @@ async def examine_file(message: Message, state: FSMContext, repo: ResumesReposit
             msg += f"Образование: {r.education or ''}\n"
             msg += f"Регион: {r.region or ''}\n"
             msg += f"Профессия: {r.profession or ''}\n"
-            msg += f"Опыт: {r.experience if r.experience is not None else ''}\n"
+            msg += f"Опыт: {r.work_experience if r.work_experience is not None else ''}\n"
             msg += f"Тип занятости: {r.type_of_employment or ''}\n"
             msg += f"Доп. информация: {r.info or ''}\n"
             msg += f"Водительские права: {r.driving_license_category or ''}\n"

@@ -22,14 +22,16 @@ class FilterTypes(Enum):
 
 @dataclass
 class Resume:
-    document_url: str
+    """The Resume model
+    """
+    url: str
     name: Optional[str]
     age: Optional[int]
     gender: Optional[str]
     education: Optional[str]
     region: Optional[str]
     profession: Optional[str]
-    experience: Optional[int]
+    work_experience: Optional[int]
     type_of_employment: Optional[str]
     info: Optional[str]
     knowledge_of_languages: Optional[list[dict[str, str]]]

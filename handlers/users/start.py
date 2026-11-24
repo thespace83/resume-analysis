@@ -1,4 +1,5 @@
-"""Handles the /start command."""
+"""Handles the /start command
+"""
 from __future__ import annotations
 
 from aiogram import Router

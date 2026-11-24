@@ -5,3 +5,4 @@ ollama
 pypdf
 aiomysql
 python-dotenv
+pydantic

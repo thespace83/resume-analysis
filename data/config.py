@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     DB_PORT: int = 3306
     DB_USER: str = "root"
     DB_PASSWORD: str
+    DB_NAME: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

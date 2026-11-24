@@ -48,18 +48,16 @@ async def publish_document(bot: Bot, repo: ResumesRepository, document: Document
     def _process():
         path = os.path.join("documents", f"{document.file_id}.{file_type}")
         context: str = extract_text_pdf(path) if file_type == "pdf" else extract_text_docx(path)
-        print(context)
         data = generate_resume_data(context)
-        print(data)
         return Resume(
-            document_url=f"{document.file_id}.{file_type}",
+            url=f"{document.file_id}.{file_type}",
             name=str(data['name']),
             age=None if int(data['age']) == -1 else int(data['age']),
             gender=str(data['gender']),
             education=str(data['education']),
             region=str(data['region']),
             profession=str(data['profession']),
-            experience=int(data['experience']),
+            work_experience=int(data['experience']),
             type_of_employment=str(data['type-of-employment']),
             info=str(data['info']),
             knowledge_of_languages=list[dict[str, str]](data['knowledge-of-languages']),
