@@ -35,25 +35,25 @@ async def update_handler(message: Message, state: FSMContext) -> None:
 
 
 @router.message(FindResumeState.watching, F.text)
-async def file_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+async def examine_file_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
     await examine_file(message, state, repo)
 
 
 @router.message(FindResumeState.watching_target, F.text == "Назад")
-async def file_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+async def back_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
     await activate_find_document(message, state, repo)
 
 
 @router.message(FindResumeState.watching_target, F.text == "Удалить")
-async def delete_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+async def delete_document_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
     await activate_delete_menu(message, state, repo)
 
 
 @router.message(DeleteResumeState.accept, F.text == "Нет, не удалять")
-async def cancel_delete_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+async def cancel_delete_document_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
     await activate_find_document(message, state, repo)
 
 
 @router.message(DeleteResumeState.accept, F.text == "Да, удалить")
-async def cancel_delete_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+async def accept_delete_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
     await delete_document(message, state, repo)
