@@ -6,6 +6,7 @@ from aiogram import Bot
 from aiogram.types import Document
 from pypdf import PdfReader
 
+from exeptions.not_open_resume import NotOpenResume
 from models.resume import Resume
 from repositories.resumes_repo import ResumesRepository
 from utils.ai.ai import get_resume
@@ -36,4 +37,6 @@ async def publish_document(bot: Bot, repo: ResumesRepository, document: Document
         return get_resume(document_url, context)
 
     resume = await asyncio.to_thread(_process)
+    if resume.name == "":
+        raise NotOpenResume
     await repo.create(resume)

@@ -5,6 +5,7 @@ from aiogram import Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, Document
 
+from exeptions.not_open_resume import NotOpenResume
 from keyboards.default import get_cancel_keyboard
 from repositories.resumes_repo import ResumesRepository
 from states import LoadResumeState, MenuState
@@ -59,6 +60,10 @@ async def load_document(
 
     try:
         await publish_document(bot, repo, document)
+    except NotOpenResume:
+        await message.reply(
+            text=f"Документ {document_name} не открытое резюме"
+        )
     except Exception as err:
         await message.reply(
             text=f"Документ {document_name} не загрузился, попробуйте ещё раз"

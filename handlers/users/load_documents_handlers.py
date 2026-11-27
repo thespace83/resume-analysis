@@ -12,7 +12,7 @@ from utils.messages.load_document import load_document, activate_load_document, 
 router = Router(name="users:load")
 
 
-@router.message(MenuState.menu, F.text == "Загрузка")
+@router.message(MenuState.menu, F.text == "Загрузка Открытого")
 async def load_handler(message: Message, state: FSMContext) -> None:
     await activate_load_document(message, state)
 

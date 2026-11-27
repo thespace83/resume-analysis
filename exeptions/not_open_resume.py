@@ -1,0 +1,2 @@
+class NotOpenResume(Exception):
+    pass
