@@ -33,8 +33,11 @@ async def main() -> None:
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.INFO,
-        stream=sys.stdout,
+        level=logging.DEBUG,
+        handlers=[
+            logging.StreamHandler(sys.stdout),
+            logging.FileHandler("app.log", mode="a", encoding="utf-8"),
+        ],
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
     asyncio.run(main())
