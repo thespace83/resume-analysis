@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-import logging
-
-import aiomysql
 from aiogram import F, Router, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from repositories.resumes_repo import ResumesRepository
 from states import LoadResumeState, MenuState
-from utils.messages.load import load_document, activate_load_document, start_load_documents
 from utils.messages.menu import activate_main_menu
+from utils.messages.messages_load import load_document, activate_load_document, start_load_documents
 
 router = Router(name="users:load")
 
