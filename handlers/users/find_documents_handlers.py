@@ -7,8 +7,8 @@ from aiogram.types import Message
 from repositories.resumes_repo import ResumesRepository
 from states import MenuState, DeleteResumeState
 from states.find_resume import FindResumeState
-from utils.messages.delete import activate_delete_menu, delete_document
-from utils.messages.find import activate_find_document, examine_file, activate_filters
+from utils.messages.delete_document import activate_delete_menu, delete_document
+from utils.messages.find_documents import activate_find_document, examine_file, activate_filters
 from utils.messages.menu import activate_main_menu
 
 router = Router(name="users:find")
@@ -46,7 +46,7 @@ async def back_handler(message: Message, state: FSMContext, repo: ResumesReposit
 
 @router.message(FindResumeState.watching_target, F.text == "Удалить")
 async def delete_document_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
-    await activate_delete_menu(message, state, repo)
+    await activate_delete_menu(message, state)
 
 
 @router.message(DeleteResumeState.accept, F.text == "Нет, не удалять")

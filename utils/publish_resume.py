@@ -1,12 +1,10 @@
 import asyncio
-import logging
 import os
 
+import docx
 from aiogram import Bot
 from aiogram.types import Document
-
 from pypdf import PdfReader
-import docx
 
 from models.resume import Resume
 from repositories.resumes_repo import ResumesRepository

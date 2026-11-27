@@ -7,7 +7,7 @@ from aiogram.types import Message
 from repositories.resumes_repo import ResumesRepository
 from states import LoadResumeState, MenuState
 from utils.messages.menu import activate_main_menu
-from utils.messages.messages_load import load_document, activate_load_document, start_load_documents
+from utils.messages.load_document import load_document, activate_load_document, start_load_documents
 
 router = Router(name="users:load")
 

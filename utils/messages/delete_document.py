@@ -1,16 +1,15 @@
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from repositories.resumes_repo import ResumesRepository
-from states import MenuState, DeleteResumeState
 from keyboards.default import get_delete_keyboard
-from utils.messages.find import activate_find_document
+from repositories.resumes_repo import ResumesRepository
+from states import DeleteResumeState
+from utils.messages.find_documents import activate_find_document
 
 
 async def activate_delete_menu(
         message: Message,
         state: FSMContext,
-        repo: ResumesRepository,
 ) -> None:
     await state.set_state(DeleteResumeState.accept)
     await message.answer(

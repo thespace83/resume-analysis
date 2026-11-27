@@ -6,3 +6,4 @@ pypdf
 aiomysql
 python-dotenv
 openai
+python-docx

@@ -7,7 +7,7 @@ from aiogram.types import Message
 from repositories.resumes_repo import ResumesRepository
 from states import FiltersState
 from utils.messages.select_filter import activate_filter
-from utils.messages.find import activate_find_document, activate_filters
+from utils.messages.find_documents import activate_find_document, activate_filters
 
 router = Router(name="users:select_filter")
 

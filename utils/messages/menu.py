@@ -1,10 +1,9 @@
-import aiomysql
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from keyboards.default import get_menu_keyboard
 from repositories.resumes_repo import ResumesRepository
 from states import MenuState
-from keyboards.default import get_menu_keyboard
 
 
 async def activate_main_menu(

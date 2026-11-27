@@ -9,7 +9,7 @@ from models.resume import FilterTypes
 from repositories.resumes_repo import ResumesRepository
 from states import FiltersState
 from utils.messages.apply_filter import apply_filter, reset_filters
-from utils.messages.find import activate_filters
+from utils.messages.find_documents import activate_filters
 
 router = Router(name="users:apply_filter")
 
