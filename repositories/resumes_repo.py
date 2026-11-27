@@ -1,6 +1,5 @@
-import logging
-
 import aiomysql
+
 from models.resume import Resume
 
 
