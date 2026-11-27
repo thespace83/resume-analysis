@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     DB_PORT: int = 3306
     DB_USER: str = "root"
     DB_PASSWORD: str
+    YANDEX_CLOUD_FOLDER: str
+    YANDEX_CLOUD_API_KEY: str
+    YANDEX_CLOUD_MODEL: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
