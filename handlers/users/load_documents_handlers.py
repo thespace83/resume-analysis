@@ -7,14 +7,14 @@ from aiogram.types import Message
 from repositories.resumes_repo import ResumesRepository
 from states import LoadResumeState, MenuState
 from utils.messages.menu import activate_main_menu
-from utils.messages.load_document import load_document, activate_load_document, start_load_documents
+from utils.messages.load_document import load_document, activate_load_open_document, start_load_documents
 
 router = Router(name="users:load")
 
 
 @router.message(MenuState.menu, F.text == "Загрузка Открытого")
 async def load_handler(message: Message, state: FSMContext) -> None:
-    await activate_load_document(message, state)
+    await activate_load_open_document(message, state)
 
 
 @router.message(LoadResumeState.waiting_for_document, F.text == "Отмена")
@@ -23,7 +23,7 @@ async def cancel_handler(message: Message, state: FSMContext, repo: ResumesRepos
 
 
 @router.message(LoadResumeState.waiting_for_document, F.document)
-async def document_delivered_handler(
+async def open_document_delivered_handler(
         message: Message,
         bot: Bot,
         state: FSMContext,

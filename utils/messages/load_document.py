@@ -13,7 +13,7 @@ from utils.messages.menu import activate_main_menu
 from utils.publish_resume import publish_document
 
 
-async def activate_load_document(
+async def activate_load_open_document(
         message: Message,
         state: FSMContext
 ) -> None:
