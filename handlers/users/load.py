@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 import aiomysql
 from aiogram import F, Router, Bot
 from aiogram.fsm.context import FSMContext
@@ -7,7 +9,7 @@ from aiogram.types import Message
 
 from repositories.resumes_repo import ResumesRepository
 from states import LoadResumeState, MenuState
-from utils.messages.load import load_document, activate_load_document
+from utils.messages.load import load_document, activate_load_document, start_load_documents
 from utils.messages.menu import activate_main_menu
 
 router = Router(name="users:load")
@@ -24,5 +26,15 @@ async def cancel_handler(message: Message, state: FSMContext, repo: ResumesRepos
 
 
 @router.message(LoadResumeState.waiting_for_document, F.document)
-async def document_delivered_handler(message: Message, bot: Bot, state: FSMContext, repo: ResumesRepository) -> None:
-    await load_document(bot, message, state, repo)
+async def document_delivered_handler(
+        message: Message,
+        bot: Bot,
+        state: FSMContext,
+        repo: ResumesRepository,
+        media_events: list[Message] = [],
+) -> None:
+    messages = media_events or [message]
+
+    await start_load_documents(message, repo, state)
+    for msg in messages:
+        await load_document(bot, msg, repo)
