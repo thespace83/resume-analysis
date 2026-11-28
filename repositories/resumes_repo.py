@@ -66,6 +66,8 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
         query: str = "WHERE "
         if targets:
             query += f"({targets_query})"
+            if filters:
+                query += " AND "
         if filters:
             query += " AND ".join(filters)
 
