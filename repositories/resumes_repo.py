@@ -1,5 +1,3 @@
-import logging
-
 import aiomysql
 
 from models.resume import Resume
@@ -202,7 +200,6 @@ class ResumesRepository:
                     knowledge_of_languages=knowledge_of_languages, driving_license_category=driving_license_category,
                     own_car=own_car, citizenship=citizenship, context=context, targets=targets
                 )
-                logging.debug(query)
                 await cur.execute(query, params)
                 row = await cur.fetchone()
                 return row[0]

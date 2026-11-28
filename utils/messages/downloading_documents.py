@@ -16,7 +16,6 @@ async def downloading_documents(
         repo: ResumesRepository,
 ) -> None:
     await state.set_state(DownloadingState.downloading)
-    logging.info(f"{await state.get_value("targets")}")
     if await state.get_value("targets") is not None:
         for target in await state.get_value("targets"):
             resume: Resume | None = await repo.get_resume(target)
