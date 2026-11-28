@@ -115,6 +115,7 @@ async def create_resumes_message(
     citizenship = await state.get_value("citizenship")
     driving_license_category = await state.get_value("driving_license_category")
     knowledge_of_languages = await state.get_value("knowledge_of_languages")
+    targets = await state.get_value("targets")
 
     params = {
         "name": name,
@@ -129,6 +130,7 @@ async def create_resumes_message(
         "type_of_employment": type_of_employment,
         "citizenship": citizenship,
         "driving_license_category": driving_license_category,
+        "targets": targets
     }
     if knowledge_of_languages is not None:
         params["knowledge_of_languages"] = [{
@@ -165,6 +167,7 @@ async def create_filters_message(
         "citizenship": "Гражданство",
         "driving_license_category": "Водительские права",
         "knowledge_of_languages": "Знание языков",
+        "targets": "Похожие резюме"
     }
 
     filters = ""
@@ -173,6 +176,8 @@ async def create_filters_message(
         value = await state.get_value(param)
         if value is not None:
             exists = True
+            if param == "targets":
+                value = "#" + " #".join(map(str, value))
             filters += f" {name}: {value}\n"
 
     if exists:

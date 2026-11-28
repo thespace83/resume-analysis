@@ -10,6 +10,7 @@ from keyboards.default import get_cancel_keyboard
 from repositories.resumes_repo import ResumesRepository
 from states import LoadResumeState, MenuState
 from utils.closed_resume import find_similar_document
+from utils.messages.find_documents import activate_find_document
 from utils.messages.menu import activate_main_menu
 from utils.publish_resume import publish_document
 
@@ -73,16 +74,20 @@ async def load_document(
 
 async def load_closed_document(
         bot: Bot,
+        state: FSMContext,
         message: Message,
         repo: ResumesRepository,
 ) -> None:
     document: Document = await load_document(message, repo)
 
     try:
-        await find_similar_document(bot, repo, document)
+        similar_resumes: list[int] = await find_similar_document(bot, repo, document)
+        await state.update_data(targets=similar_resumes)
     except Exception as err:
         logging.error(err)
         traceback.print_exc()
+
+    await activate_find_document(message, state, repo)
 
 
 async def load_open_document(

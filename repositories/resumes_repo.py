@@ -1,3 +1,5 @@
+import logging
+
 import aiomysql
 
 from models.resume import Resume
@@ -7,7 +9,14 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
                      profession=None, experience=None, type_of_employment=None,
                      info=None, knowledge_of_languages=None,
                      driving_license_category=None, own_car=None, citizenship=None,
-                     context=None) -> tuple[str, list]:
+                     context=None, targets=None) -> tuple[str, list]:
+    if targets is None:
+        targets = []
+
+    targets_query = f""
+    if len(targets) > 0:
+        targets_query = f"resumes.id = " + " OR resumes.id = ".join(map(str, targets))
+
     filters = []
     params = []
 
@@ -54,8 +63,9 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
             params.append(f"{knowledge["level"]}")
 
     if knowledge_of_languages is None:
-        return ("WHERE " + " AND ".join(filters)) if filters else "", params
-    return ("JOIN `knowledge-of-languages` USING(id) " + "WHERE " + " AND ".join(filters)) if filters else "", params
+        return (f"WHERE ({targets_query})" + " AND ".join(filters)) if filters or targets else "", params
+    return ("JOIN `knowledge-of-languages` USING(id) " + f"WHERE ({targets_query})" + " AND ".join(
+        filters)) if filters or targets else "", params
 
 
 def search_resumes(
@@ -63,15 +73,16 @@ def search_resumes(
         profession=None, experience=None, type_of_employment=None,
         info=None, knowledge_of_languages=None,
         driving_license_category=None, own_car=None, citizenship=None,
-        context=None, limit=20, offset=0,
+        context=None, targets=None, limit=20, offset=0,
 ):
+    if targets is None:
+        targets = []
     where_clause, params = get_where_clause(name=name, age=age, gender=gender, education=education, region=region,
                                             profession=profession, experience=experience,
-                                            type_of_employment=type_of_employment,
-                                            info=info, knowledge_of_languages=knowledge_of_languages,
+                                            type_of_employment=type_of_employment, info=info,
+                                            knowledge_of_languages=knowledge_of_languages,
                                             driving_license_category=driving_license_category, own_car=own_car,
-                                            citizenship=citizenship,
-                                            context=context)
+                                            citizenship=citizenship, context=context, targets=targets)
     query = f"""
         SELECT resumes.*
         FROM resumes
@@ -89,22 +100,20 @@ def search_count_of_resumes(
         profession=None, experience=None, type_of_employment=None,
         info=None, knowledge_of_languages=None,
         driving_license_category=None, own_car=None, citizenship=None,
-        context=None
+        context=None, targets=None
 ):
     where_clause, params = get_where_clause(name=name, age=age, gender=gender, education=education, region=region,
                                             profession=profession, experience=experience,
                                             type_of_employment=type_of_employment,
                                             info=info, knowledge_of_languages=knowledge_of_languages,
                                             driving_license_category=driving_license_category, own_car=own_car,
-                                            citizenship=citizenship,
-                                            context=context)
+                                            citizenship=citizenship, context=context, targets=targets)
 
     query = f"""
         SELECT COUNT(*)
         FROM resumes
         {where_clause}
     """
-
     return query, params
 
 
@@ -173,6 +182,7 @@ class ResumesRepository:
             own_car=None,
             citizenship=None,
             context=None,
+            targets=None
     ) -> int:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
@@ -180,7 +190,7 @@ class ResumesRepository:
                     name=name, age=age, gender=gender, education=education, region=region, profession=profession,
                     experience=experience, type_of_employment=type_of_employment, info=info,
                     knowledge_of_languages=knowledge_of_languages, driving_license_category=driving_license_category,
-                    own_car=own_car, citizenship=citizenship, context=context
+                    own_car=own_car, citizenship=citizenship, context=context, targets=targets
                 )
                 await cur.execute(query, params)
                 row = await cur.fetchone()
@@ -204,6 +214,7 @@ class ResumesRepository:
             own_car=None,
             citizenship=None,
             context=None,
+            targets=None,
     ) -> dict[int, Resume]:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
@@ -211,7 +222,7 @@ class ResumesRepository:
                     limit=limit, offset=offset, name=name, age=age, gender=gender, education=education, region=region,
                     profession=profession, experience=experience, type_of_employment=type_of_employment, info=info,
                     knowledge_of_languages=knowledge_of_languages, driving_license_category=driving_license_category,
-                    own_car=own_car, citizenship=citizenship, context=context
+                    own_car=own_car, citizenship=citizenship, context=context, targets=targets,
                 )
                 await cur.execute(query, params)
                 rows = await cur.fetchall()
@@ -314,6 +325,23 @@ class ResumesRepository:
                 similar += [row[0] for row in await cur.fetchall()]
 
                 return similar
+
+    async def find_similar_resumes(self, context: str) -> list[int]:
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute(
+                    """
+                    SELECT r.id
+                    FROM resumes AS r
+                             CROSS JOIN (SELECT MAX(MATCH (context) AGAINST("%s")) AS max_relevance
+                                         FROM resumes) AS max_rel
+                    WHERE MATCH (r.context) AGAINST("%s") >= 0.9 * max_rel.max_relevance
+                      AND max_rel.max_relevance
+                        > 0;
+                    """, (context, context))
+
+                rows = await cur.fetchall()
+                return [row[0] for row in rows]
 
     async def get_document_id(self, number: int) -> str:
         async with self.pool.acquire() as conn:
