@@ -28,6 +28,11 @@ async def cancel_handler(message: Message, state: FSMContext, repo: ResumesRepos
     await activate_main_menu(message, state, repo)
 
 
+@router.message(LoadResumeState.waiting_for_close_document, F.text == "Отмена")
+async def cancel_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
+    await activate_main_menu(message, state, repo)
+
+
 @router.message(LoadResumeState.waiting_for_open_document, F.document)
 async def open_document_delivered_handler(
         message: Message,
