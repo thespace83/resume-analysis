@@ -13,16 +13,21 @@ router = Router(name="users:load")
 
 
 @router.message(MenuState.menu, F.text == "Загрузка Открытого")
-async def load_handler(message: Message, state: FSMContext) -> None:
+async def load_open_document_handler(message: Message, state: FSMContext) -> None:
     await activate_load_open_document(message, state)
 
 
-@router.message(LoadResumeState.waiting_for_document, F.text == "Отмена")
+@router.message(MenuState.menu, F.text == "Загрузка Закрытого")
+async def load_close_document_handler(message: Message, state: FSMContext) -> None:
+    await activate_load_open_document(message, state)
+
+
+@router.message(LoadResumeState.waiting_for_open_document, F.text == "Отмена")
 async def cancel_handler(message: Message, state: FSMContext, repo: ResumesRepository) -> None:
     await activate_main_menu(message, state, repo)
 
 
-@router.message(LoadResumeState.waiting_for_document, F.document)
+@router.message(LoadResumeState.waiting_for_open_document, F.document)
 async def open_document_delivered_handler(
         message: Message,
         bot: Bot,

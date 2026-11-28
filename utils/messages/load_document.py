@@ -17,10 +17,21 @@ async def activate_load_open_document(
         message: Message,
         state: FSMContext
 ) -> None:
-    await state.set_state(LoadResumeState.waiting_for_document)
+    await state.set_state(LoadResumeState.waiting_for_open_document)
     await message.answer(
-        f"Загрузите Ваш документ\n\nДоступные форматы: pdf, docx",
+        f"Загрузите документы\n\nДоступные форматы: pdf, docx",
         reply_markup=get_cancel_keyboard()
+    )
+
+
+async def activate_load_closed_document(
+        message: Message,
+        state: FSMContext
+) -> None:
+    await state.set_state(LoadResumeState.waiting_for_close_document)
+    await message.answer(
+        f"Загрузите документ\n\nДоступные форматы: pdf, docx",
+        reply_markup=get_cancel_keyboard(),
     )
 
 
