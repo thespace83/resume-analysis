@@ -1,29 +1,33 @@
+import logging
+import os
+
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile
 
 from keyboards.default import get_delete_keyboard
+from models.resume import Resume
 from repositories.resumes_repo import ResumesRepository
 from states.downloading import DownloadingState
+from utils.file_service import get_document
 from utils.messages.find_documents import activate_find_document
 
 
-async def activate_downloading_documents_menu(
-        message: Message,
-        state: FSMContext,
-) -> None:
-    await state.set_state(DownloadingState.downloading)
-    if state.get_value("targets") is not None:
-    await message.answer(
-        text="",
-        reply_markup=get_delete_keyboard())
-
-
-async def delete_document(
+async def downloading_documents(
         message: Message,
         state: FSMContext,
         repo: ResumesRepository,
 ) -> None:
-    resume_id = await state.get_value("target")
-    await repo.delete(resume_id)
-    await message.answer(text=f"Резюме #{resume_id} удалено")
-    await activate_find_document(message, state, repo)
+    await state.set_state(DownloadingState.downloading)
+    logging.info(f"{await state.get_value("targets")}")
+    if await state.get_value("targets") is not None:
+        for target in await state.get_value("targets"):
+            resume: Resume | None = await repo.get_resume(target)
+            if resume is None:
+                raise
+
+            await message.answer_document(
+                caption=resume.name if resume.name else "",
+                document=get_document(resume.document_url)
+            )
+    else:
+        await activate_find_document(message, state, repo)
