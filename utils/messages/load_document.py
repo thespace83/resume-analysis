@@ -9,6 +9,7 @@ from exeptions.not_open_resume import NotOpenResume
 from keyboards.default import get_cancel_keyboard
 from repositories.resumes_repo import ResumesRepository
 from states import LoadResumeState, MenuState
+from utils.closed_resume import find_similar_document
 from utils.messages.menu import activate_main_menu
 from utils.publish_resume import publish_document
 
@@ -49,13 +50,12 @@ async def start_load_documents(
 
 
 async def load_document(
-        bot: Bot,
         message: Message,
         repo: ResumesRepository,
-) -> None:
+) -> Document:
     if message.document is None:
         logging.error("The document has not been delivered.")
-        return
+        raise
 
     document = message.document
     logging.debug(f"The user uploaded a new document: {document}")
@@ -68,16 +68,39 @@ async def load_document(
             "Бот поддерживает форматы .pdf и .docx"
             "Максимальный размер файла 20МБ"
         )
+    return document
+
+
+async def load_closed_document(
+        bot: Bot,
+        message: Message,
+        repo: ResumesRepository,
+) -> None:
+    document: Document = await load_document(message, repo)
+
+    try:
+        await find_similar_document(bot, repo, document)
+    except Exception as err:
+        logging.error(err)
+        traceback.print_exc()
+
+
+async def load_open_document(
+        bot: Bot,
+        message: Message,
+        repo: ResumesRepository,
+) -> None:
+    document: Document = await load_document(message, repo)
 
     try:
         await publish_document(bot, repo, document)
     except NotOpenResume:
         await message.reply(
-            text=f"Документ {document_name} не открытое резюме"
+            text=f"Документ {document.file_name} не открытое резюме"
         )
     except Exception as err:
         await message.reply(
-            text=f"Документ {document_name} не загрузился, попробуйте ещё раз"
+            text=f"Документ {document.file_name} не загрузился, попробуйте ещё раз"
         )
         logging.error(err)
         traceback.print_exc()
