@@ -42,7 +42,6 @@ class ExternalAIService:
                 truncation="disabled",
                 text=resume_format,
             )
-            logging.debug(response)
             output: ParsedResponseOutputMessage = response.output[0]
             content: ParsedResponseOutputText = output.content[0]
             return json.loads(content.text)

@@ -12,6 +12,7 @@ async def activate_main_menu(
         repo: ResumesRepository,
 ) -> None:
     await state.set_state(MenuState.menu)
+    await state.set_data({})
     await message.answer(
         "Аналитика Резюме\n\n"
         'Чтобы загрузить резюме используйте "Загрузка"\n'

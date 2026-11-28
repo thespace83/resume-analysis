@@ -62,10 +62,18 @@ def get_where_clause(name=None, age=None, gender=None, education=None, region=No
             filters.append(f"`knowledge-of-languages`.`level` = %s")
             params.append(f"{knowledge["level"]}")
 
-    if knowledge_of_languages is None:
-        return (f"WHERE ({targets_query})" + " AND ".join(filters)) if filters or targets else "", params
-    return ("JOIN `knowledge-of-languages` USING(id) " + f"WHERE ({targets_query})" + " AND ".join(
-        filters)) if filters or targets else "", params
+    if targets or filters:
+        query: str = "WHERE "
+        if targets:
+            query += f"({targets_query})"
+        if filters:
+            query += " AND ".join(filters)
+
+        if knowledge_of_languages is not None:
+            query = "JOIN `knowledge-of-languages` USING(id) " + query
+        return query, params
+    else:
+        return "", []
 
 
 def search_resumes(
@@ -192,6 +200,7 @@ class ResumesRepository:
                     knowledge_of_languages=knowledge_of_languages, driving_license_category=driving_license_category,
                     own_car=own_car, citizenship=citizenship, context=context, targets=targets
                 )
+                logging.debug(query)
                 await cur.execute(query, params)
                 row = await cur.fetchone()
                 return row[0]
