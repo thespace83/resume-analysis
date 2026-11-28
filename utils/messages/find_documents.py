@@ -25,7 +25,7 @@ async def activate_find_document(
     )
     await message.answer(
         await create_resumes_message(state, repo),
-        reply_markup=get_find_files_keyboard()
+        reply_markup=await get_find_files_keyboard(state)
     )
 
 

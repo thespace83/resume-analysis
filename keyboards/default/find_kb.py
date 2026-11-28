@@ -1,16 +1,18 @@
 from __future__ import annotations
 
+from aiogram.fsm.context import FSMContext
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 
-def get_find_files_keyboard() -> ReplyKeyboardMarkup:
+async def get_find_files_keyboard(state: FSMContext) -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
-    builder.row(
+    first = builder.row(
         KeyboardButton(text="Фильтры"),
         KeyboardButton(text="Обновить"),
-        KeyboardButton(text="Скачать"),
     )
+    if await state.get_value("targets"):
+        first.add(KeyboardButton(text="Скачать"))
     builder.row(
         KeyboardButton(text="Отмена"),
     )
