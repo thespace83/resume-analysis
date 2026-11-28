@@ -1,10 +1,8 @@
 import logging
-import os
 
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, FSInputFile
+from aiogram.types import Message
 
-from keyboards.default import get_delete_keyboard
 from models.resume import Resume
 from repositories.resumes_repo import ResumesRepository
 from states.downloading import DownloadingState
